@@ -1,6 +1,6 @@
 use crate::{
     Document, LinterError,
-    checker::{CheckResult, Checker, Match},
+    checker::{CheckResult, Checker, CheckerInit, Match},
 };
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -14,8 +14,8 @@ pub struct RegexChecker {
     regex: Regex,
 }
 
-impl Checker for RegexChecker {
-    fn new(args: &Option<yaml_serde::Mapping>) -> Result<Self, LinterError> {
+impl CheckerInit for RegexChecker {
+    fn new(args: Option<&yaml_serde::Mapping>) -> Result<Self, LinterError> {
         let Some(args) = args else {
             return Err(LinterError::MissingArgs);
         };
@@ -40,7 +40,9 @@ impl Checker for RegexChecker {
 
         Ok(Self { regex })
     }
+}
 
+impl Checker for RegexChecker {
     fn check(&self, doc: &Document) -> CheckResult {
         let matches = self
             .regex

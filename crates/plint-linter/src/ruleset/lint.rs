@@ -9,7 +9,7 @@ impl Ruleset {
         let mut results = Vec::new();
 
         for rule in &self.rules {
-            let checker = checker::checker_from(&rule.checker, &rule.args);
+            let checker = checker::checker_from(&rule.checker, rule.args.as_ref());
 
             match checker {
                 Ok(checker) => {
