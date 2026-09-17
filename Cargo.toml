@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
 members = [
-    "plint-cli",
-    "plint-linter",
+    "crates/plint-cli",
+    "crates/plint-linter",
 ]
