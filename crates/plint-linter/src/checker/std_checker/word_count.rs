@@ -4,11 +4,11 @@ use crate::{
 };
 use unicode_segmentation::UnicodeSegmentation;
 
-pub struct WordCountChecker {}
+pub struct WordCountChecker;
 
 impl CheckerInit for WordCountChecker {
     fn new(_args: Option<&yaml_serde::Mapping>) -> Result<Self, LinterError> {
-        Ok(Self {})
+        Ok(Self)
     }
 }
 

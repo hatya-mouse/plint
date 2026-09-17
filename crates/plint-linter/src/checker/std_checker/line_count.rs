@@ -3,11 +3,11 @@ use crate::{
     checker::{CheckResult, Checker, CheckerInit},
 };
 
-pub struct LineCountChecker {}
+pub struct LineCountChecker;
 
 impl CheckerInit for LineCountChecker {
     fn new(_args: Option<&yaml_serde::Mapping>) -> Result<Self, LinterError> {
-        Ok(Self {})
+        Ok(Self)
     }
 }
 

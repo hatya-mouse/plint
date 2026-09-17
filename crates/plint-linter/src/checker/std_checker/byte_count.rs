@@ -3,11 +3,11 @@ use crate::{
     checker::{CheckResult, Checker, CheckerInit},
 };
 
-pub struct ByteCountChecker {}
+pub struct ByteCountChecker;
 
 impl CheckerInit for ByteCountChecker {
     fn new(_args: Option<&yaml_serde::Mapping>) -> Result<Self, LinterError> {
-        Ok(Self {})
+        Ok(Self)
     }
 }
 

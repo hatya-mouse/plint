@@ -4,11 +4,11 @@ use crate::{
 };
 use unicode_segmentation::UnicodeSegmentation;
 
-pub struct SentenceCountChecker {}
+pub struct SentenceCountChecker;
 
 impl CheckerInit for SentenceCountChecker {
     fn new(_args: Option<&yaml_serde::Mapping>) -> Result<Self, LinterError> {
-        Ok(Self {})
+        Ok(Self)
     }
 }
 
