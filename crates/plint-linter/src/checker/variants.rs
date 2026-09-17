@@ -1,17 +1,5 @@
-use super::std_checker::{
-    self, byte_count::ByteCountChecker, char_count::CharCountChecker, line_count::LineCountChecker,
-    regex::RegexChecker,
-};
+use super::{CheckerEnum, std_checker};
 use crate::LinterError;
-use enum_dispatch::enum_dispatch;
-
-#[enum_dispatch(Checker)]
-pub(crate) enum CheckerEnum {
-    StdByteCount(ByteCountChecker),
-    StdCharCount(CharCountChecker),
-    StdLineCount(LineCountChecker),
-    StdRegex(RegexChecker),
-}
 
 pub(crate) fn checker_from(
     check: &str,
