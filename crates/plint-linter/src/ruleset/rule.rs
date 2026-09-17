@@ -1,4 +1,4 @@
-use crate::ruleset::Condition;
+use crate::Condition;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]

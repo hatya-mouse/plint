@@ -1,8 +1,7 @@
-mod condition;
 mod lint;
 mod rule;
 
-pub use condition::Condition;
+pub use lint::{LintEntry, LintResult};
 pub use rule::Rule;
 
 use serde::{Deserialize, Serialize};

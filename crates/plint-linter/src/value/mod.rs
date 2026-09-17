@@ -1,3 +1,6 @@
+mod de;
+mod ser;
+
 #[derive(Debug, Clone)]
 pub struct Match {
     pub range: std::ops::Range<usize>,

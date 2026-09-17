@@ -1,3 +1,6 @@
+mod de;
+mod ser;
+
 #[derive(Debug)]
 pub enum Condition {
     Eq(crate::Value),

@@ -5,7 +5,7 @@ use crate::{
 };
 
 impl Ruleset {
-    pub fn lint(&self, doc: &Document) -> Vec<LintResult> {
+    pub fn lint(&self, doc: &Document) -> Vec<LintEntry> {
         let mut results = Vec::new();
 
         for rule in &self.rules {
@@ -18,7 +18,10 @@ impl Ruleset {
                     results.extend(processed_results);
                 }
                 Err(linter_error) => {
-                    results.push(LintResult::LinterError(linter_error));
+                    results.push(LintEntry {
+                        rule_id: rule.id.clone(),
+                        result: LintResult::LinterError(linter_error),
+                    });
                 }
             }
         }
@@ -27,16 +30,19 @@ impl Ruleset {
     }
 }
 
-fn process_check_result(rule: &Rule, check_result: CheckResult) -> Vec<LintResult> {
+fn process_check_result(rule: &Rule, check_result: CheckResult) -> Vec<LintEntry> {
     let mut results;
 
     match check_result {
         CheckResult::Matches(matches) => {
             results = Vec::with_capacity(matches.len());
             for m in matches {
-                results.push(LintResult::Entry {
-                    message: rule.message.clone(),
-                    match_data: Some(m),
+                results.push(LintEntry {
+                    rule_id: rule.id.clone(),
+                    result: LintResult::Info {
+                        message: rule.message.clone(),
+                        match_data: Some(m),
+                    },
                 });
             }
         }
@@ -47,14 +53,20 @@ fn process_check_result(rule: &Rule, check_result: CheckResult) -> Vec<LintResul
                 let eval_result = condition.evaluate(&value);
 
                 if eval_result {
-                    results.push(LintResult::Entry {
-                        message: rule.message.clone(),
-                        match_data: None,
+                    results.push(LintEntry {
+                        rule_id: rule.id.clone(),
+                        result: LintResult::Info {
+                            message: rule.message.clone(),
+                            match_data: None,
+                        },
                     });
                 }
             } else {
-                results.push(LintResult::MissingCondition {
-                    value: value.clone(),
+                results.push(LintEntry {
+                    rule_id: rule.id.clone(),
+                    result: LintResult::MissingCondition {
+                        value: value.clone(),
+                    },
                 })
             }
         }
@@ -63,13 +75,19 @@ fn process_check_result(rule: &Rule, check_result: CheckResult) -> Vec<LintResul
     results
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
+pub struct LintEntry {
+    pub rule_id: String,
+    pub result: LintResult,
+}
+
+#[derive(Debug, Clone)]
 pub enum LintResult {
     LinterError(LinterError),
     MissingCondition {
         value: crate::Value,
     },
-    Entry {
+    Info {
         message: String,
         match_data: Option<Match>,
     },
