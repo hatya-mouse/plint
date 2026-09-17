@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 plint-linter = { workspace = true }
+yaml_serde = "0.10.7"

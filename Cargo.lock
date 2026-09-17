@@ -74,6 +74,7 @@ name = "plint-cli"
 version = "0.1.0"
 dependencies = [
  "plint-linter",
+ "yaml_serde",
 ]
 
 [[package]]

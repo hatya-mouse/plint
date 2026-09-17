@@ -3,17 +3,17 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize)]
 pub enum Condition {
     #[serde(rename = "eq")]
-    Eq(yaml_serde::Value),
+    Eq(String),
     #[serde(rename = "neq")]
-    Neq(yaml_serde::Value),
+    Neq(String),
     #[serde(rename = "gt")]
-    Gt(yaml_serde::Value),
+    Gt(String),
     #[serde(rename = "gte")]
-    Gte(yaml_serde::Value),
+    Gte(String),
     #[serde(rename = "lt")]
-    Lt(yaml_serde::Value),
+    Lt(String),
     #[serde(rename = "lte")]
-    Lte(yaml_serde::Value),
+    Lte(String),
     #[serde(rename = "and")]
     And(Vec<Condition>),
     #[serde(rename = "or")]
@@ -82,28 +82,20 @@ impl Condition {
 
 fn comp_value(
     a: &crate::Value,
-    b: &yaml_serde::Value,
+    b: &str,
     cmp_str: impl FnOnce(&str, &str) -> bool,
     cmp_i64: impl FnOnce(i64, i64) -> bool,
     cmp_f64: impl FnOnce(f64, f64) -> bool,
     cmp_bool: impl FnOnce(bool, bool) -> bool,
 ) -> bool {
-    match b {
-        yaml_serde::Value::String(b_str) => cmp_str(&a.force_string(), b_str),
-        yaml_serde::Value::Number(b_n) => {
-            if b_n.is_u64() || b_n.is_i64() {
-                a.try_i64()
-                    .is_some_and(|a_int| b_n.as_i64().is_some_and(|b_int| cmp_i64(a_int, b_int)))
-            } else if b_n.is_f64() {
-                a.try_f64()
-                    .is_some_and(|a_int| b_n.as_f64().is_some_and(|b_int| cmp_f64(a_int, b_int)))
-            } else {
-                false
-            }
-        }
-        yaml_serde::Value::Bool(b_bool) => {
-            a.try_bool().is_some_and(|a_bool| cmp_bool(a_bool, *b_bool))
-        }
-        _ => false,
+    match a {
+        crate::Value::String(a_str) => cmp_str(a_str, b),
+        crate::Value::Integer(a_int) => b.parse::<i64>().is_ok_and(|b_int| cmp_i64(*a_int, b_int)),
+        crate::Value::Float(a_float) => b
+            .parse::<f64>()
+            .is_ok_and(|b_float| cmp_f64(*a_float, b_float)),
+        crate::Value::Boolean(a_bool) => b
+            .parse::<bool>()
+            .is_ok_and(|b_bool| cmp_bool(*a_bool, b_bool)),
     }
 }

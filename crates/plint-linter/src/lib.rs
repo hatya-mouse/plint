@@ -6,4 +6,5 @@ pub mod value;
 
 pub use document::Document;
 pub use error::LinterError;
+pub use ruleset::{Condition, Rule, Ruleset};
 pub use value::{Match, Value};
