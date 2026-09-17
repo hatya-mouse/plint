@@ -19,7 +19,7 @@ pub(crate) fn checker_from(
     args: &Option<yaml_serde::Mapping>,
 ) -> Result<Box<impl Checker>, LinterError> {
     match check {
-        "regex" => Ok(Box::new(RegexChecker::new(args)?)),
+        "std.regex" => Ok(Box::new(RegexChecker::new(args)?)),
         _ => Err(LinterError::UnknownChecker(check.to_string())),
     }
 }

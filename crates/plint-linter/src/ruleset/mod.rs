@@ -1,6 +1,5 @@
 mod condition;
 mod lint;
-mod parse;
 mod rule;
 
 pub use condition::Condition;

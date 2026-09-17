@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub enum LinterError {
     /// The rule lacks all required arguments.
     MissingArgs,

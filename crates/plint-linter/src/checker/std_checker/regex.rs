@@ -37,22 +37,16 @@ impl Checker for RegexChecker {
             arg: "pattern".to_string(),
             reason: Some(format!("Invalid regex pattern: {}", e)),
         })?;
+
         Ok(Self { regex })
     }
 
     fn check(&self, doc: &Document) -> CheckResult {
-        if let Some(caps) = self.regex.captures(&doc.content) {
-            let matches = (1..caps.len())
-                .into_iter()
-                .filter_map(|i| {
-                    caps.get(i).map(|caps| Match {
-                        range: caps.range(),
-                    })
-                })
-                .collect();
-            CheckResult::Matches(matches)
-        } else {
-            CheckResult::Matches(Vec::new())
-        }
+        let matches = self
+            .regex
+            .find_iter(&doc.content)
+            .map(|m| Match { range: m.range() })
+            .collect();
+        CheckResult::Matches(matches)
     }
 }

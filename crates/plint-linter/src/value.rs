@@ -1,8 +1,9 @@
+#[derive(Debug, Clone)]
 pub struct Match {
     pub range: std::ops::Range<usize>,
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub enum Value {
     String(String),
     Integer(i64),

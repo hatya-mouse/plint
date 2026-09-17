@@ -63,6 +63,7 @@ fn process_check_result(rule: &Rule, check_result: CheckResult) -> Vec<LintResul
     results
 }
 
+#[derive(Debug)]
 pub enum LintResult {
     LinterError(LinterError),
     MissingCondition {

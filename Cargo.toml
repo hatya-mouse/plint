@@ -4,3 +4,6 @@ members = [
     "crates/plint-cli",
     "crates/plint-linter",
 ]
+
+[workspace.dependencies]
+plint-linter = { path = "crates/plint-linter" }
