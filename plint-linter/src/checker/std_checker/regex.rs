@@ -1,5 +1,5 @@
 use crate::{
-    Document,
+    Document, LinterError,
     checker::{CheckResult, Checker, Match},
 };
 use regex::Regex;
@@ -11,19 +11,37 @@ struct RegexArgs {
 }
 
 pub struct RegexChecker {
-    args: RegexArgs,
+    regex: Regex,
 }
 
 impl Checker for RegexChecker {
-    fn new(args: yaml_serde::Value) -> Result<Self, Box<dyn std::error::Error>> {
-        let args: RegexArgs = yaml_serde::from_value(args)?;
-        Ok(Self { args })
+    fn new(args: &Option<yaml_serde::Mapping>) -> Result<Self, LinterError> {
+        let Some(args) = args else {
+            return Err(LinterError::MissingArgs);
+        };
+
+        let parsed_args = RegexArgs {
+            pattern: args
+                .get("pattern")
+                .ok_or_else(|| LinterError::MissingArg {
+                    arg: "pattern".to_string(),
+                })?
+                .as_str()
+                .ok_or_else(|| LinterError::InvalidArg {
+                    arg: "pattern".to_string(),
+                    reason: None,
+                })?
+                .into(),
+        };
+        let regex = Regex::new(&parsed_args.pattern).map_err(|e| LinterError::InvalidArg {
+            arg: "pattern".to_string(),
+            reason: Some(format!("Invalid regex pattern: {}", e)),
+        })?;
+        Ok(Self { regex })
     }
 
-    fn check(&self, doc: &Document) -> Result<CheckResult, Box<dyn std::error::Error>> {
-        let re = Regex::new(&self.args.pattern)?;
-
-        if let Some(caps) = re.captures(&doc.content) {
+    fn check(&self, doc: &Document) -> CheckResult {
+        if let Some(caps) = self.regex.captures(&doc.content) {
             let matches = (1..caps.len())
                 .into_iter()
                 .filter_map(|i| {
@@ -32,9 +50,9 @@ impl Checker for RegexChecker {
                     })
                 })
                 .collect();
-            Ok(CheckResult::Matches(matches))
+            CheckResult::Matches(matches)
         } else {
-            Ok(CheckResult::Matches(Vec::new()))
+            CheckResult::Matches(Vec::new())
         }
     }
 }

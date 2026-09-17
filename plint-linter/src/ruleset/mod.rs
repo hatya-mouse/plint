@@ -1,33 +1,24 @@
 mod condition;
+mod lint;
+mod parse;
+mod rule;
 
 pub use condition::Condition;
+pub use rule::Rule;
 
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Ruleset {
     pub name: String,
-    pub version: u32,
+    #[serde(default)]
+    pub description: String,
+    pub version: u64,
     pub rules: Vec<Rule>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Rule {
-    pub id: String,
-    pub check: String,
-    pub severity: Severity,
-    pub message: String,
-    #[serde(default)]
-    pub args: yaml_serde::Value,
-    pub condition: Option<Condition>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub enum Severity {
-    #[serde(rename = "error")]
-    Error,
-    #[serde(rename = "warning")]
-    Warning,
-    #[serde(rename = "info")]
-    Info,
+impl Ruleset {
+    pub fn from_yaml(yaml_str: &str) -> yaml_serde::Result<Self> {
+        yaml_serde::from_str(yaml_str)
+    }
 }

@@ -1,7 +1,9 @@
 pub mod checker;
+pub mod document;
+pub mod error;
 pub mod ruleset;
+pub mod value;
 
-pub struct Document {
-    pub name: String,
-    pub content: String,
-}
+pub use document::Document;
+pub use error::LinterError;
+pub use value::{Match, Value};

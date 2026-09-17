@@ -5,6 +5,6 @@ edition = "2024"
 
 [dependencies]
 regex = "1.13.1"
-rust-yaml = { version = "1.1.0", features = ["serde"] }
-serde = "1.0.229"
+serde = { version = "1.0.229", features = ["derive"] }
+thiserror = "2.0.20"
 yaml_serde = "0.10.7"

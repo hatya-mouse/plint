@@ -1,14 +1,12 @@
 mod std_checker;
 
-pub use std_checker::RegexChecker;
-
-use crate::Document;
-use ::std::ops::Range;
+use crate::{Document, LinterError, Match, Value};
+use std_checker::regex::RegexChecker;
 
 pub trait Checker: Sized {
-    fn new(args: yaml_serde::Value) -> Result<Self, Box<dyn std::error::Error>>;
+    fn new(args: &Option<yaml_serde::Mapping>) -> Result<Self, LinterError>;
 
-    fn check(&self, doc: &Document) -> Result<CheckResult, Box<dyn std::error::Error>>;
+    fn check(&self, doc: &Document) -> CheckResult;
 }
 
 pub enum CheckResult {
@@ -16,51 +14,12 @@ pub enum CheckResult {
     Value(Value),
 }
 
-pub struct Match {
-    pub range: Range<usize>,
-}
-
-pub enum Value {
-    String(String),
-    Integer(i64),
-    Float(f64),
-    Boolean(bool),
-}
-
-impl Value {
-    pub(crate) fn into_string(&self) -> String {
-        match self {
-            Value::String(s) => s.clone(),
-            Value::Integer(i) => i.to_string(),
-            Value::Float(f) => f.to_string(),
-            Value::Boolean(b) => b.to_string(),
-        }
-    }
-
-    pub(crate) fn into_i64(&self) -> Option<i64> {
-        match self {
-            Value::String(s) => s.parse::<i64>().ok(),
-            Value::Integer(i) => Some(*i),
-            Value::Float(f) => Some(*f as i64),
-            Value::Boolean(_) => None,
-        }
-    }
-
-    pub(crate) fn into_f64(&self) -> Option<f64> {
-        match self {
-            Value::String(s) => s.parse::<f64>().ok(),
-            Value::Integer(i) => Some(*i as f64),
-            Value::Float(f) => Some(*f),
-            Value::Boolean(_) => None,
-        }
-    }
-
-    pub(crate) fn into_bool(&self) -> Option<bool> {
-        match self {
-            Value::String(s) => s.parse::<bool>().ok(),
-            Value::Integer(_) => None,
-            Value::Float(_) => None,
-            Value::Boolean(b) => Some(*b),
-        }
+pub(crate) fn checker_from(
+    check: &str,
+    args: &Option<yaml_serde::Mapping>,
+) -> Result<Box<impl Checker>, LinterError> {
+    match check {
+        "regex" => Ok(Box::new(RegexChecker::new(args)?)),
+        _ => Err(LinterError::UnknownChecker(check.to_string())),
     }
 }

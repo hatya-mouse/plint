@@ -1,3 +1,1 @@
-mod regex;
-
-pub use regex::RegexChecker;
+pub mod regex;
