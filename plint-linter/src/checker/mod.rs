@@ -4,9 +4,10 @@ pub use std_checker::RegexChecker;
 
 use crate::Document;
 use ::std::ops::Range;
-use serde::{Deserialize, Serialize};
 
-pub trait Checker<'a>: Sized + Serialize + Deserialize<'a> {
+pub trait Checker: Sized {
+    fn new(args: yaml_serde::Value) -> Result<Self, Box<dyn std::error::Error>>;
+
     fn check(&self, doc: &Document) -> Result<CheckResult, Box<dyn std::error::Error>>;
 }
 

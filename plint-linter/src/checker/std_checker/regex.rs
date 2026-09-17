@@ -6,13 +6,22 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
-pub struct RegexChecker {
-    pattern: String,
+struct RegexArgs {
+    pub pattern: String,
 }
 
-impl Checker<'_> for RegexChecker {
+pub struct RegexChecker {
+    args: RegexArgs,
+}
+
+impl Checker for RegexChecker {
+    fn new(args: yaml_serde::Value) -> Result<Self, Box<dyn std::error::Error>> {
+        let args: RegexArgs = yaml_serde::from_value(args)?;
+        Ok(Self { args })
+    }
+
     fn check(&self, doc: &Document) -> Result<CheckResult, Box<dyn std::error::Error>> {
-        let re = Regex::new(&self.pattern)?;
+        let re = Regex::new(&self.args.pattern)?;
 
         if let Some(caps) = re.captures(&doc.content) {
             let matches = (1..caps.len())
