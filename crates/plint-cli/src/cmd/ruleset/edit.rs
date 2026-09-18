@@ -126,7 +126,7 @@ fn edit_loop(original_ruleset_name: &str, ruleset: &mut Ruleset) {
             EditAction::SaveAndExit => {
                 ruleset.modified();
                 if original_ruleset_name != ruleset.name {
-                    match remove_ruleset(&ruleset.name) {
+                    match remove_ruleset(original_ruleset_name) {
                         Ok(_) => match create_ruleset(ruleset) {
                             Ok(_) => println!("Ruleset saved successfully."),
                             Err(err) => eprintln!("Failed to save the ruleset: {:#?}", err),
