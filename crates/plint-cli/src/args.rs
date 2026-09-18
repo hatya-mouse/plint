@@ -19,6 +19,9 @@ pub(super) enum Commands {
     Lint {
         /// Path(s) to the file(s) to lint
         files: Vec<PathBuf>,
+        /// Optional name(s) of the ruleset(s) and group(s) to use for linting.
+        /// Leave this empty to use all available rulesets
+        rulesets: Vec<String>,
     },
     /// Manage rulesets
     Ruleset {
