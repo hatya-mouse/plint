@@ -1,6 +1,5 @@
 use crate::{
-    cli::{name_validator, version_validator},
-    storage::{load_index_file, load_ruleset, save_ruleset},
+    storage::{load_index_file, load_ruleset, save_ruleset}, tui::{name_validator, version_validator}, utils::rulesets_dir,
 };
 use inquire::{error::InquireResult, validator::MaxLengthValidator};
 use plint_linter::{Rule, Ruleset, checker::ALL_CHECKERS, ruleset::Severity};
@@ -10,7 +9,7 @@ use strum_macros::EnumIter;
 
 pub(crate) fn edit(mut ruleset_name: Option<String>) {
     // Load the index file
-    let mut index_file = match load_index_file() {
+    let index_file = match load_index_file() {
         Ok(index_file) => index_file,
         Err(err) => {
             eprintln!("Failed to load the index file: {:#?}", err);
@@ -35,13 +34,13 @@ pub(crate) fn edit(mut ruleset_name: Option<String>) {
     }
 
     // Ensure that the ruleset is not None
-    let Some(ruleset_name) = ruleset_name else {
+    let Some(original_ruleset_name) = ruleset_name else {
         eprintln!("Failed to get the ruleset name");
         return;
     };
 
     // Get the ruleset from the index file
-    let rulesets = load_ruleset(&ruleset_name);
+    let rulesets = load_ruleset(&original_ruleset_name);
     let mut ruleset = if rulesets.len() == 1 {
         match rulesets.into_iter().next().unwrap() {
             Ok(ruleset) => ruleset,
@@ -51,14 +50,14 @@ pub(crate) fn edit(mut ruleset_name: Option<String>) {
             }
         }
     } else {
-        eprintln!("'{}' is a ruleset group", ruleset_name);
+        eprintln!("'{}' is a ruleset group", original_ruleset_name);
         return;
     };
 
-    edit_loop(&ruleset_name, &mut ruleset);
+    edit_loop(&original_ruleset_name, &mut ruleset);
 }
 
-fn edit_loop(ruleset_name: &str, ruleset: &mut Ruleset) {
+fn edit_loop(original_ruleset_name: &str, ruleset: &mut Ruleset) {
     loop {
         let Ok(action) =
             inquire::Select::new("Select an action", EditAction::iter().collect()).prompt()
@@ -110,7 +109,7 @@ fn edit_loop(ruleset_name: &str, ruleset: &mut Ruleset) {
                             Some(description)
                         }
                     }
-                    Err(err) => eprintln!("Failed to get the ruleset name: {}", err),
+                    Err(err) => eprintln!("Failed to get the ruleset description: {}", err),
                 }
             }
             EditAction::EditVersion => {
@@ -125,13 +124,18 @@ fn edit_loop(ruleset_name: &str, ruleset: &mut Ruleset) {
                             version.trim().parse::<u64>().ok()
                         };
                     }
-                    Err(err) => eprintln!("Failed to get the ruleset name: {}", err),
+                    Err(err) => eprintln!("Failed to get the ruleset version: {}", err),
                 }
             }
             EditAction::EditRules => rules_edit_loop(ruleset),
             EditAction::SaveAndExit => {
+                if original_ruleset_name != ruleset.name {
+                    let rulesets_dir = rulesets_dir().map(||)
+                    std::fs::remove_file();
+                }
+
                 ruleset.modified();
-                if let Err(err) = save_ruleset(ruleset_name, ruleset) {
+                if let Err(err) = save_ruleset(&ruleset.name, ruleset) {
                     eprintln!("Failed to save the ruleset: {:#?}", err);
                 } else {
                     println!("Ruleset saved successfully.");
@@ -157,7 +161,17 @@ fn rules_edit_loop(ruleset: &mut Ruleset) {
 
         match rule_action {
             EditRuleAction::Back => break,
-            EditRuleAction::AddRule => {}
+            EditRuleAction::AddRule => {
+                let mut new_rule = Rule::default();
+                match rule_field(&mut new_rule) {
+                    Ok(()) => {
+                        let name = new_rule.name.clone();
+                        ruleset.rules.push(new_rule);
+                        println!("Rule '{}' added.", name);
+                    }
+                    Err(err) => eprintln!("Failed to add a new rule: {}", err),
+                };
+            }
             EditRuleAction::RemoveRule => {
                 match select_rule(ruleset) {
                     Ok(RuleSelection::Back) => (),
@@ -173,7 +187,12 @@ fn rules_edit_loop(ruleset: &mut Ruleset) {
                 Ok(RuleSelection::Back) => (),
                 Ok(RuleSelection::Rule(index, _)) => {
                     if let Some(rule) = ruleset.rules.get_mut(index) {
-                        edit_rule(rule);
+                        match rule_field(rule) {
+                            Ok(()) => {
+                                println!("Rule '{}' edited.", rule.name);
+                            }
+                            Err(err) => eprintln!("Failed to add a new rule: {}", err),
+                        };
                     }
                 }
                 Err(err) => eprintln!("Failed to select a rule: {}", err),
@@ -182,33 +201,33 @@ fn rules_edit_loop(ruleset: &mut Ruleset) {
     }
 }
 
-fn edit_rule(rule: &mut Rule) {}
-
-fn rule_field(original_rule: &Rule) -> InquireResult<Rule> {
-    let name = inquire::Text::new("Name")
-        .with_validator(name_validator)
-        .with_initial_value(&original_rule.name)
-        .prompt()?;
-    let checker = inquire::Select::new("Checker", ALL_CHECKERS.to_vec())
-        .prompt()?
-        .clone();
-    let severity = inquire::Select::new("Severity", Severity::all()).prompt()?;
-    let message = inquire::Text::new("Message")
-        .with_validator(
-            MaxLengthValidator::new(4096)
-                .with_message("Description must be 4096 characters or less"),
-        )
-        .with_initial_value(&original_rule.message)
-        .prompt()?;
-
-    Ok(Rule {
+fn rule_field(rule: &mut Rule) -> InquireResult<()> {
+    let Rule {
         name,
         message,
         severity,
         checker,
         args,
         condition,
-    })
+    } = rule;
+
+    *name = inquire::Text::new("Name")
+        .with_validator(name_validator)
+        .with_initial_value(name)
+        .prompt()?;
+    *checker = inquire::Select::new("Checker", ALL_CHECKERS.to_vec())
+        .prompt()?
+        .to_string();
+    *severity = inquire::Select::new("Severity", Severity::all()).prompt()?;
+    *message = inquire::Text::new("Message")
+        .with_validator(
+            MaxLengthValidator::new(4096)
+                .with_message("Description must be 4096 characters or less"),
+        )
+        .with_initial_value(message)
+        .prompt()?;
+
+    Ok(())
 }
 
 /// Lets user select a rule from the ruleset.

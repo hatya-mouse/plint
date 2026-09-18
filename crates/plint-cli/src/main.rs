@@ -1,8 +1,8 @@
 mod args;
-mod cli;
 mod cmd;
 mod consts;
 mod storage;
+mod tui;
 mod utils;
 
 use crate::{
@@ -29,7 +29,7 @@ fn main() {
                 description.clone(),
                 version.clone(),
             ),
-            Some(RulesetCommands::Edit { ruleset }) => {}
+            Some(RulesetCommands::Edit { ruleset }) => cmd::ruleset::edit(ruleset.clone()),
             Some(RulesetCommands::List) => {}
             None => (),
         },

@@ -1,6 +1,6 @@
 use crate::{
-    cli::{name_validator, version_validator},
-    storage::{load_index_file, write_index_file},
+    storage::{load_index_file, save_ruleset, write_index_file},
+    tui::{name_validator, version_validator},
     utils::data_dir,
 };
 use inquire::validator::MaxLengthValidator;
@@ -83,19 +83,11 @@ pub(crate) fn create(
     // Create directories is they don't exist
     dest_path.parent().map(std::fs::create_dir_all);
 
-    // Write the ruleset to the destination path
-    match yaml_serde::to_string(&ruleset) {
-        Ok(ruleset_string) => match std::fs::write(&dest_path, ruleset_string) {
-            Ok(_) => {
-                println!("Created new ruleset: {}", name);
-            }
-            Err(err) => {
-                eprintln!("Failed to create a ruleset: {}", err);
-                return;
-            }
-        },
+    // Write the ruleset
+    match save_ruleset(&name, &ruleset) {
+        Ok(_) => (),
         Err(err) => {
-            eprintln!("Failed to create a ruleset: {}", err);
+            eprintln!("Failed to create a ruleset: {:#?}", err);
             return;
         }
     }
@@ -110,6 +102,9 @@ pub(crate) fn create(
             eprintln!("Failed to create a ruleset: {:#?}", err);
             // Clean up the created ruleset file if writing to the index file fails
             std::fs::remove_file(&dest_path).ok();
+            return;
         }
     }
+
+    println!("Ruleset created successfully: {}", name);
 }

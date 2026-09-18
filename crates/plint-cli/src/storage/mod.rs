@@ -3,7 +3,7 @@ mod index;
 
 use crate::{
     storage::{group::Group, index::IndexFile},
-    utils::data_dir,
+    utils::{data_dir, rulesets_dir},
 };
 use plint_linter::Ruleset;
 
@@ -29,11 +29,11 @@ pub(super) fn load_ruleset(ruleset_name: &str) -> Vec<Result<Ruleset, PlintIoErr
 
 /// Saves the ruleset with the given name.
 pub(super) fn save_ruleset(ruleset_name: &str, ruleset: &Ruleset) -> Result<(), PlintIoError> {
-    let Some(data_dir) = data_dir() else {
+    let Some(rulesets_dir) = rulesets_dir() else {
         return Err(PlintIoError::PathNotAvailable);
     };
 
-    let ruleset_path = data_dir.join(ruleset_name).with_added_extension("yaml");
+    let ruleset_path = rulesets_dir.join(ruleset_name).with_added_extension("yaml");
     match yaml_serde::to_string(ruleset) {
         Ok(ruleset_string) => match std::fs::write(ruleset_path, ruleset_string) {
             Ok(_) => Ok(()),

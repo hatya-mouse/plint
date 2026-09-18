@@ -6,7 +6,7 @@ edition = "2024"
 [dependencies]
 clap = { version = "4.6.7", features = ["derive"] }
 dirs = "7.0.0"
-inquire = "0.9.4"
+inquire = { version = "0.9.4", features = ["editor"] }
 plint-linter = { workspace = true }
 serde = "1.0.229"
 strum = "0.28.0"
