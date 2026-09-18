@@ -1,9 +1,10 @@
 use crate::{
+    cli::{name_validator, version_validator},
     storage::{load_index_file, load_ruleset, save_ruleset},
-    utils::{name_validator, version_validator},
 };
-use inquire::validator::MaxLengthValidator;
-use plint_linter::Ruleset;
+use inquire::{error::InquireResult, validator::MaxLengthValidator};
+use plint_linter::{Rule, Ruleset, checker::ALL_CHECKERS, ruleset::Severity};
+use std::fmt::Display;
 use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
@@ -127,10 +128,10 @@ fn edit_loop(ruleset_name: &str, ruleset: &mut Ruleset) {
                     Err(err) => eprintln!("Failed to get the ruleset name: {}", err),
                 }
             }
-            EditAction::EditRules => rules_edit_loop(),
+            EditAction::EditRules => rules_edit_loop(ruleset),
             EditAction::SaveAndExit => {
                 ruleset.modified();
-                if let Err(err) = save_ruleset(&ruleset_name, &ruleset) {
+                if let Err(err) = save_ruleset(ruleset_name, ruleset) {
                     eprintln!("Failed to save the ruleset: {:#?}", err);
                 } else {
                     println!("Ruleset saved successfully.");
@@ -145,7 +146,7 @@ fn edit_loop(ruleset_name: &str, ruleset: &mut Ruleset) {
     }
 }
 
-fn rules_edit_loop() {
+fn rules_edit_loop(ruleset: &mut Ruleset) {
     loop {
         let Ok(rule_action) =
             inquire::Select::new("Select an action", EditRuleAction::iter().collect()).prompt()
@@ -157,8 +158,70 @@ fn rules_edit_loop() {
         match rule_action {
             EditRuleAction::Back => break,
             EditRuleAction::AddRule => {}
+            EditRuleAction::RemoveRule => {
+                match select_rule(ruleset) {
+                    Ok(RuleSelection::Back) => (),
+                    Ok(RuleSelection::Rule(index, id)) => {
+                        // Remove the rule from the ruleset
+                        ruleset.rules.remove(index);
+                        println!("Rule '{}' removed.", id);
+                    }
+                    Err(err) => eprintln!("Failed to select a rule: {}", err),
+                }
+            }
+            EditRuleAction::SelectRule => match select_rule(ruleset) {
+                Ok(RuleSelection::Back) => (),
+                Ok(RuleSelection::Rule(index, _)) => {
+                    if let Some(rule) = ruleset.rules.get_mut(index) {
+                        edit_rule(rule);
+                    }
+                }
+                Err(err) => eprintln!("Failed to select a rule: {}", err),
+            },
         }
     }
+}
+
+fn edit_rule(rule: &mut Rule) {}
+
+fn rule_field(original_rule: &Rule) -> InquireResult<Rule> {
+    let name = inquire::Text::new("Name")
+        .with_validator(name_validator)
+        .with_initial_value(&original_rule.name)
+        .prompt()?;
+    let checker = inquire::Select::new("Checker", ALL_CHECKERS.to_vec())
+        .prompt()?
+        .clone();
+    let severity = inquire::Select::new("Severity", Severity::all()).prompt()?;
+    let message = inquire::Text::new("Message")
+        .with_validator(
+            MaxLengthValidator::new(4096)
+                .with_message("Description must be 4096 characters or less"),
+        )
+        .with_initial_value(&original_rule.message)
+        .prompt()?;
+
+    Ok(Rule {
+        name,
+        message,
+        severity,
+        checker,
+        args,
+        condition,
+    })
+}
+
+/// Lets user select a rule from the ruleset.
+fn select_rule(ruleset: &Ruleset) -> InquireResult<RuleSelection> {
+    let mut choices = vec![RuleSelection::Back];
+    choices.extend(
+        ruleset
+            .rules
+            .iter()
+            .enumerate()
+            .map(|(index, rule)| RuleSelection::Rule(index, rule.name.clone())),
+    );
+    inquire::Select::new("Select a rule", choices).prompt()
 }
 
 #[derive(EnumIter, strum_macros::Display)]
@@ -189,4 +252,19 @@ enum EditRuleAction {
     RemoveRule,
     #[strum(serialize = "Select Rule to Edit")]
     SelectRule,
+}
+
+#[derive(EnumIter)]
+enum RuleSelection {
+    Back,
+    Rule(usize, String),
+}
+
+impl Display for RuleSelection {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            RuleSelection::Back => write!(f, "Back"),
+            RuleSelection::Rule(index, id) => write!(f, "{}. {}", index, id),
+        }
+    }
 }

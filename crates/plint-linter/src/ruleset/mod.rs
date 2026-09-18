@@ -2,7 +2,7 @@ mod lint;
 mod rule;
 
 pub use lint::{LintEntry, LintResult};
-pub use rule::Rule;
+pub use rule::{Rule, Severity};
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};

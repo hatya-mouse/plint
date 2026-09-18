@@ -19,7 +19,7 @@ impl Ruleset {
                 }
                 Err(linter_error) => {
                     results.push(LintEntry {
-                        rule_id: rule.id.clone(),
+                        rule_name: rule.name.clone(),
                         result: LintResult::LinterError(linter_error),
                     });
                 }
@@ -38,7 +38,7 @@ fn process_check_result(rule: &Rule, check_result: CheckResult) -> Vec<LintEntry
             results = Vec::with_capacity(matches.len());
             for m in matches {
                 results.push(LintEntry {
-                    rule_id: rule.id.clone(),
+                    rule_name: rule.name.clone(),
                     result: LintResult::Info {
                         message: rule.message.clone(),
                         match_data: Some(m),
@@ -54,7 +54,7 @@ fn process_check_result(rule: &Rule, check_result: CheckResult) -> Vec<LintEntry
 
                 if eval_result {
                     results.push(LintEntry {
-                        rule_id: rule.id.clone(),
+                        rule_name: rule.name.clone(),
                         result: LintResult::Info {
                             message: rule.message.clone(),
                             match_data: None,
@@ -63,7 +63,7 @@ fn process_check_result(rule: &Rule, check_result: CheckResult) -> Vec<LintEntry
                 }
             } else {
                 results.push(LintEntry {
-                    rule_id: rule.id.clone(),
+                    rule_name: rule.name.clone(),
                     result: LintResult::MissingCondition {
                         value: value.clone(),
                     },
@@ -77,7 +77,7 @@ fn process_check_result(rule: &Rule, check_result: CheckResult) -> Vec<LintEntry
 
 #[derive(Debug, Clone)]
 pub struct LintEntry {
-    pub rule_id: String,
+    pub rule_name: String,
     pub result: LintResult,
 }
 

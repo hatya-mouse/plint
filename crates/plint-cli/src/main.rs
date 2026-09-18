@@ -1,4 +1,5 @@
 mod args;
+mod cli;
 mod cmd;
 mod consts;
 mod storage;

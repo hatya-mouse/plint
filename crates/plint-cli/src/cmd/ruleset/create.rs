@@ -1,6 +1,7 @@
 use crate::{
+    cli::{name_validator, version_validator},
     storage::{load_index_file, write_index_file},
-    utils::{data_dir, name_validator, version_validator},
+    utils::data_dir,
 };
 use inquire::validator::MaxLengthValidator;
 use plint_linter::Ruleset;

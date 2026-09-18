@@ -36,3 +36,12 @@ pub(crate) enum CheckerEnum {
     StdSentenceCount(SentenceCountChecker),
     StdWordCount(WordCountChecker),
 }
+
+pub const ALL_CHECKERS: &[&str] = &[
+    "std.byte-count",
+    "std.char-count",
+    "std.line-count",
+    "std.regex",
+    "std.sentence-count",
+    "std.word-count",
+];

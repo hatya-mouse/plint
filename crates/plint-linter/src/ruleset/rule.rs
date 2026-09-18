@@ -1,9 +1,11 @@
+use std::fmt::Display;
+
 use crate::Condition;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Rule {
-    pub id: String,
+    pub name: String,
     pub message: String,
     #[serde(default)]
     pub severity: Severity,
@@ -25,4 +27,26 @@ pub enum Severity {
     #[serde(rename = "info")]
     #[default]
     Info,
+}
+
+impl Severity {
+    pub fn all() -> Vec<Severity> {
+        vec![
+            Severity::Error,
+            Severity::Warning,
+            Severity::Advisory,
+            Severity::Info,
+        ]
+    }
+}
+
+impl Display for Severity {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Error => write!(f, "Error"),
+            Self::Warning => write!(f, "Warning"),
+            Self::Advisory => write!(f, "Advisory"),
+            Self::Info => write!(f, "Info"),
+        }
+    }
 }
