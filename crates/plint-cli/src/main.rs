@@ -1,64 +1,35 @@
 mod args;
+mod cmd;
 mod consts;
-mod ruleset;
+mod storage;
 mod utils;
 
 use crate::{
-    args::Commands,
-    ruleset::{RulesetLoadError, load_index_file, load_ruleset},
+    args::{Commands, GroupCommands, RulesetCommands},
+    storage::PlintIoError,
 };
 use clap::Parser;
-use plint_linter::{Document, Ruleset};
 
 fn main() {
     let cli = args::Cli::parse();
 
     match &cli.command {
-        Some(Commands::Lint { files, rulesets }) => {
-            let mut parsed_rulesets = Vec::new();
-            if let Some(rulesets) = rulesets {
-                for ruleset_name in rulesets {
-                    parsed_rulesets.extend(load_ruleset(ruleset_name));
-                }
-            } else {
-                match load_index_file() {
-                    Ok(index) => {
-                        for ruleset_name in index.rulesets.keys() {
-                            parsed_rulesets.extend(load_ruleset(ruleset_name));
-                        }
-                    }
-                    Err(err) => {
-                        parsed_rulesets.push(Err(err));
-                    }
-                }
-            }
-
-            for file in files {
-                let doc = match plint_linter::Document::from_file(file) {
-                    Ok(doc) => doc,
-                    Err(err) => {
-                        println!("Lint Error: {}", err);
-                        continue;
-                    }
-                };
-
-                for result in &parsed_rulesets {
-                    process_ruleset(&doc, result);
-                }
-            }
-        }
-        _ => (),
+        Some(Commands::Lint { files, rulesets }) => cmd::lint::lint(files, rulesets.as_ref()),
+        Some(Commands::Ruleset { command }) => match command {
+            Some(RulesetCommands::Check { rulesets }) => {}
+            Some(RulesetCommands::Create { ruleset }) => cmd::ruleset::create(ruleset),
+            Some(RulesetCommands::Edit { ruleset }) => {}
+            Some(RulesetCommands::List) => {}
+            None => (),
+        },
+        Some(Commands::Group { command }) => match command {
+            Some(GroupCommands::Create { group }) => {}
+            Some(GroupCommands::Edit { group }) => {}
+            Some(GroupCommands::Add { group, rulesets }) => {}
+            Some(GroupCommands::RemoveSet { group, rulesets }) => {}
+            Some(GroupCommands::List) => {}
+            None => (),
+        },
+        None => (),
     };
-}
-
-fn process_ruleset(doc: &Document, result: &Result<Ruleset, RulesetLoadError>) {
-    match result {
-        Ok(ruleset) => {
-            let lint_results = ruleset.lint(doc);
-            println!("{:#?}", lint_results);
-        }
-        Err(err) => {
-            println!("{:#?}", err);
-        }
-    }
 }

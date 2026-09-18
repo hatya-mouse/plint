@@ -43,13 +43,13 @@ pub(super) enum RulesetCommands {
         /// Name(s) of the ruleset(s) and group(s) to verify
         rulesets: Vec<String>,
     },
-    /// Edit an existing ruleset
-    Edit {
+    /// Create a new ruleset
+    Create {
         /// Name of the ruleset to edit
         ruleset: String,
     },
-    /// Create a new ruleset
-    Create {
+    /// Edit an existing ruleset interactively
+    Edit {
         /// Name of the ruleset to edit
         ruleset: String,
     },
@@ -59,23 +59,23 @@ pub(super) enum RulesetCommands {
 
 #[derive(Subcommand)]
 pub(super) enum GroupCommands {
-    /// Edit an existing ruleset group
-    Edit { group: String },
-    /// Create a new ruleset group interactively
+    /// Create a new ruleset group
     Create { group: String },
+    /// Edit an existing ruleset group interactively
+    Edit { group: String },
     /// Add ruleset(s) to the group
     Add {
         /// Name of the group to add the ruleset to
         group: String,
         /// Name(s) of the ruleset(s) to add to the group
-        ruleset: Vec<String>,
+        rulesets: Vec<String>,
     },
     /// Remove ruleset(s) from the group
-    Remove {
+    RemoveSet {
         /// Name of the group to add the ruleset to
         group: String,
         /// Name(s) of the ruleset(s) to add to the group
-        ruleset: Vec<String>,
+        rulesets: Vec<String>,
     },
     /// List all installed or locally available groups
     List,

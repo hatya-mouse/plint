@@ -15,7 +15,27 @@ pub struct Ruleset {
     pub rules: Vec<Rule>,
 }
 
+impl Default for Ruleset {
+    fn default() -> Self {
+        Self {
+            name: String::default(),
+            description: String::default(),
+            version: 1,
+            rules: Vec::new(),
+        }
+    }
+}
+
 impl Ruleset {
+    pub fn new_named(name: &str) -> Self {
+        Self {
+            name: name.to_string(),
+            description: String::new(),
+            version: 1,
+            rules: Vec::new(),
+        }
+    }
+
     pub fn from_yaml(yaml_str: &str) -> yaml_serde::Result<Self> {
         yaml_serde::from_str(yaml_str)
     }
