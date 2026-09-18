@@ -2,11 +2,10 @@ mod group;
 mod index;
 
 use crate::{
-    storage::index::IndexFile,
+    storage::{group::Group, index::IndexFile},
     utils::{data_dir, rulesets_dir},
 };
 use plint_linter::Ruleset;
-use std::path::PathBuf;
 
 #[derive(Debug)]
 pub(super) enum PlintIoError {
@@ -18,10 +17,24 @@ pub(super) enum PlintIoError {
 }
 
 /// Loads the ruleset with the given name from the data directory.
-pub(super) fn load_ruleset(ruleset_name: &str) -> Result<Ruleset, PlintIoError> {}
+pub(super) fn load_ruleset(ruleset_name: &str) -> Result<Ruleset, PlintIoError> {
+    // Get the ruleset path from the index file
+    let ruleset_path = load_index_file()?.ruleset_path(ruleset_name)?;
+
+    // Read the ruleset file
+    let ruleset_string = std::fs::read_to_string(&ruleset_path).map_err(PlintIoError::IoError)?;
+    yaml_serde::from_str::<Ruleset>(&ruleset_string).map_err(PlintIoError::YamlParseError)
+}
 
 /// Loads the group with the given name from the data directory.
-pub(super) fn load_group(group_name: &str) -> Vec<Result<Ruleset, PlintIoError>> {}
+pub(super) fn load_group(group_name: &str) -> Result<Group, PlintIoError> {
+    // Get the group path from the index file
+    let group_path = load_index_file()?.group_path(group_name)?;
+
+    // Read the group file
+    let group_string = std::fs::read_to_string(&group_path).map_err(PlintIoError::IoError)?;
+    yaml_serde::from_str::<Group>(&group_string).map_err(PlintIoError::YamlParseError)
+}
 
 /// Creates a new ruleset file with the given name and adds it to the index file.
 pub(super) fn create_ruleset(ruleset_name: &str, ruleset: &Ruleset) -> Result<(), PlintIoError> {
@@ -65,7 +78,7 @@ pub(super) fn create_ruleset(ruleset_name: &str, ruleset: &Ruleset) -> Result<()
 /// Saves the ruleset with the given name.
 pub(super) fn save_ruleset(ruleset: &Ruleset) -> Result<(), PlintIoError> {
     // Get the path to the ruleset file from the index file
-    let ruleset_path = ruleset_path(&load_index_file()?, &ruleset.name)?;
+    let ruleset_path = load_index_file()?.ruleset_path(&ruleset.name)?;
 
     // Write the ruleset to the file
     match yaml_serde::to_string(ruleset) {
@@ -99,16 +112,6 @@ pub(super) fn remove_ruleset(ruleset_name: &str) -> Result<(), PlintIoError> {
     }
 
     write_index_file(&index_file)
-}
-
-/// Returns the path to the ruleset file with the given name.
-fn ruleset_path(index_file: &IndexFile, ruleset_name: &str) -> Result<PathBuf, PlintIoError> {
-    // Get the path to the ruleset file from the index file
-    index_file
-        .rulesets
-        .get(ruleset_name)
-        .cloned()
-        .ok_or_else(|| PlintIoError::NotFound(ruleset_name.to_string()))
 }
 
 // --- INDEX FILE OPERATION ---
