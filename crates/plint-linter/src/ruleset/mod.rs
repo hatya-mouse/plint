@@ -6,32 +6,25 @@ pub use rule::Rule;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Ruleset {
     pub name: String,
-    #[serde(default)]
-    pub description: String,
-    pub version: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub author: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub version: Option<u64>,
     pub rules: Vec<Rule>,
-}
-
-impl Default for Ruleset {
-    fn default() -> Self {
-        Self {
-            name: String::default(),
-            description: String::default(),
-            version: 1,
-            rules: Vec::new(),
-        }
-    }
 }
 
 impl Ruleset {
     pub fn new_named(name: &str) -> Self {
         Self {
             name: name.to_string(),
-            description: String::new(),
-            version: 1,
+            author: None,
+            description: None,
+            version: None,
             rules: Vec::new(),
         }
     }
