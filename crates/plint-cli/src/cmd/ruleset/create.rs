@@ -5,7 +5,7 @@ use crate::{
 use plint_linter::Ruleset;
 
 pub(crate) fn create(name: &str) {
-    let ruleset = Ruleset::default();
+    let ruleset = Ruleset::new_named(name);
     let dest_path = match data_dir().map(|path| {
         path.join("rulesets")
             .join(name)
