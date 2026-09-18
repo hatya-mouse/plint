@@ -50,6 +50,21 @@ pub(crate) fn create(
         }
     };
 
+    // Load the index file
+    let mut index_file = match load_index_file() {
+        Ok(index_file) => index_file,
+        Err(err) => {
+            eprintln!("Failed to load the index file: {:#?}", err);
+            return;
+        }
+    };
+
+    // Return if the ruleset already exists in the index file
+    if index_file.rulesets.contains_key(&name) {
+        eprintln!("Ruleset already exists: {}", name);
+        return;
+    }
+
     let ruleset = Ruleset::new_empty(name.clone(), authors, description, version);
     let dest_path = match data_dir().map(|path| {
         path.join("rulesets")
@@ -84,25 +99,15 @@ pub(crate) fn create(
     }
 
     // Add the ruleset to the index file
-    match load_index_file() {
-        Ok(mut index_file) => {
-            index_file
-                .rulesets
-                .insert(name.to_string(), dest_path.clone());
-
-            match write_index_file(&index_file) {
-                Ok(_) => (),
-                Err(err) => {
-                    eprintln!("Failed to create a ruleset: {:#?}", err);
-                    // Clean up the created ruleset file if writing to the index file fails
-                    std::fs::remove_file(&dest_path).ok();
-                }
-            }
-        }
+    index_file
+        .rulesets
+        .insert(name.to_string(), dest_path.clone());
+    match write_index_file(&index_file) {
+        Ok(_) => (),
         Err(err) => {
             eprintln!("Failed to create a ruleset: {:#?}", err);
-            // Clean up the created ruleset file if loading the index file fails
-            std::fs::remove_file(dest_path).ok();
+            // Clean up the created ruleset file if writing to the index file fails
+            std::fs::remove_file(&dest_path).ok();
         }
-    };
+    }
 }
