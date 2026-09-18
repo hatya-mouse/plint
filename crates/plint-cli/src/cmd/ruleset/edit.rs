@@ -1,5 +1,6 @@
 use crate::{
-    storage::{load_index_file, load_ruleset, save_ruleset}, tui::{name_validator, version_validator}, utils::rulesets_dir,
+    storage::{create_ruleset, load_index_file, load_ruleset, remove_ruleset, save_ruleset},
+    tui::{name_validator, version_validator},
 };
 use inquire::{error::InquireResult, validator::MaxLengthValidator};
 use plint_linter::{Rule, Ruleset, checker::ALL_CHECKERS, ruleset::Severity};
@@ -40,18 +41,12 @@ pub(crate) fn edit(mut ruleset_name: Option<String>) {
     };
 
     // Get the ruleset from the index file
-    let rulesets = load_ruleset(&original_ruleset_name);
-    let mut ruleset = if rulesets.len() == 1 {
-        match rulesets.into_iter().next().unwrap() {
-            Ok(ruleset) => ruleset,
-            Err(err) => {
-                eprintln!("Failed to load the ruleset: {:#?}", err);
-                return;
-            }
+    let mut ruleset = match load_ruleset(&original_ruleset_name) {
+        Ok(ruleset) => ruleset,
+        Err(err) => {
+            eprintln!("Failed to load the ruleset: {:#?}", err);
+            return;
         }
-    } else {
-        eprintln!("'{}' is a ruleset group", original_ruleset_name);
-        return;
     };
 
     edit_loop(&original_ruleset_name, &mut ruleset);
@@ -129,16 +124,20 @@ fn edit_loop(original_ruleset_name: &str, ruleset: &mut Ruleset) {
             }
             EditAction::EditRules => rules_edit_loop(ruleset),
             EditAction::SaveAndExit => {
-                if original_ruleset_name != ruleset.name {
-                    let rulesets_dir = rulesets_dir().map(||)
-                    std::fs::remove_file();
-                }
-
                 ruleset.modified();
-                if let Err(err) = save_ruleset(&ruleset.name, ruleset) {
-                    eprintln!("Failed to save the ruleset: {:#?}", err);
+                if original_ruleset_name != ruleset.name {
+                    match remove_ruleset(&ruleset.name) {
+                        Ok(_) => match create_ruleset(ruleset) {
+                            Ok(_) => println!("Ruleset saved successfully."),
+                            Err(err) => eprintln!("Failed to save the ruleset: {:#?}", err),
+                        },
+                        Err(err) => eprintln!("Failed to save the ruleset: {:#?}", err),
+                    }
                 } else {
-                    println!("Ruleset saved successfully.");
+                    match save_ruleset(ruleset) {
+                        Ok(_) => println!("Ruleset saved successfully."),
+                        Err(err) => eprintln!("Failed to save the ruleset: {:#?}", err),
+                    }
                 }
                 break;
             }

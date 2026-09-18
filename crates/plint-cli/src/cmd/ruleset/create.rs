@@ -1,9 +1,9 @@
 use crate::{
-    storage::{load_index_file, save_ruleset, write_index_file},
+    storage::{create_ruleset, load_index_file},
     tui::{name_validator, version_validator},
     utils::data_dir,
 };
-use inquire::validator::MaxLengthValidator;
+use inquire::validator::{MaxLengthValidator, Validation};
 use plint_linter::Ruleset;
 
 pub(crate) fn create(
@@ -13,7 +13,7 @@ pub(crate) fn create(
     mut version: Option<u64>,
 ) {
     // Load the index file
-    let mut index_file = match load_index_file() {
+    let index_file = match load_index_file() {
         Ok(index_file) => index_file,
         Err(err) => {
             eprintln!("Failed to load the index file: {:#?}", err);
@@ -26,7 +26,18 @@ pub(crate) fn create(
         println!("Please enter the information for the new ruleset:");
 
         name = inquire::Text::new("Name")
-            .with_validator(name_validator)
+            .with_validators(&[
+                Box::new(name_validator),
+                Box::new(move |input: &str| {
+                    if index_file.rulesets.contains_key(input) {
+                        Ok(Validation::Invalid(
+                            "A ruleset with this name already exists".into(),
+                        ))
+                    } else {
+                        Ok(Validation::Valid)
+                    }
+                }),
+            ])
             .prompt()
             .ok();
         authors = inquire::Text::new("Authors")
@@ -61,12 +72,6 @@ pub(crate) fn create(
         }
     };
 
-    // Return if the ruleset already exists in the index file
-    if index_file.rulesets.contains_key(&name) {
-        eprintln!("Ruleset already exists: {}", name);
-        return;
-    }
-
     let ruleset = Ruleset::new_empty(name.clone(), authors, description, version);
     let dest_path = match data_dir().map(|path| {
         path.join("rulesets")
@@ -84,24 +89,10 @@ pub(crate) fn create(
     dest_path.parent().map(std::fs::create_dir_all);
 
     // Write the ruleset
-    match save_ruleset(&name, &ruleset) {
+    match create_ruleset(&ruleset) {
         Ok(_) => (),
         Err(err) => {
             eprintln!("Failed to create a ruleset: {:#?}", err);
-            return;
-        }
-    }
-
-    // Add the ruleset to the index file
-    index_file
-        .rulesets
-        .insert(name.to_string(), dest_path.clone());
-    match write_index_file(&index_file) {
-        Ok(_) => (),
-        Err(err) => {
-            eprintln!("Failed to create a ruleset: {:#?}", err);
-            // Clean up the created ruleset file if writing to the index file fails
-            std::fs::remove_file(&dest_path).ok();
             return;
         }
     }

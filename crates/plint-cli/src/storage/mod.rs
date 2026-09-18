@@ -36,18 +36,20 @@ pub(super) fn load_group(group_name: &str) -> Result<Group, PlintIoError> {
     yaml_serde::from_str::<Group>(&group_string).map_err(PlintIoError::YamlParseError)
 }
 
+// --- RULESET FILE OPERATION ---
+
 /// Creates a new ruleset file with the given name and adds it to the index file.
-pub(super) fn create_ruleset(ruleset_name: &str, ruleset: &Ruleset) -> Result<(), PlintIoError> {
+pub(super) fn create_ruleset(ruleset: &Ruleset) -> Result<(), PlintIoError> {
     let mut index_file = load_index_file()?;
 
-    if index_file.rulesets.contains_key(ruleset_name)
-        || index_file.groups.contains_key(ruleset_name)
+    if index_file.rulesets.contains_key(&ruleset.name)
+        || index_file.groups.contains_key(&ruleset.name)
     {
-        return Err(PlintIoError::DuplicateName(ruleset_name.to_string()));
+        return Err(PlintIoError::DuplicateName(ruleset.name.to_string()));
     }
 
     let Some(ruleset_path) =
-        rulesets_dir().map(|path| path.join(ruleset_name).with_added_extension("yaml"))
+        rulesets_dir().map(|path| path.join(&ruleset.name).with_added_extension("yaml"))
     else {
         return Err(PlintIoError::PathNotAvailable);
     };
@@ -55,7 +57,7 @@ pub(super) fn create_ruleset(ruleset_name: &str, ruleset: &Ruleset) -> Result<()
     // Register the path to the newly created ruleset file in the index file
     index_file
         .rulesets
-        .insert(ruleset_name.to_string(), ruleset_path.clone());
+        .insert(ruleset.name.to_string(), ruleset_path.clone());
     write_index_file(&index_file)?;
 
     let result = match yaml_serde::to_string(ruleset) {
@@ -68,7 +70,7 @@ pub(super) fn create_ruleset(ruleset_name: &str, ruleset: &Ruleset) -> Result<()
 
     // In case of an error, remove the entry from the index file
     if result.is_err() {
-        index_file.rulesets.remove(ruleset_name);
+        index_file.rulesets.remove(&ruleset.name);
         write_index_file(&index_file)?;
     }
 

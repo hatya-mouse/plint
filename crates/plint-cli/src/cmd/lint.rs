@@ -1,21 +1,29 @@
 use crate::{
     PlintIoError,
-    storage::{load_index_file, load_ruleset},
+    storage::{load_group, load_index_file, load_ruleset},
 };
 use plint_linter::{Document, Ruleset};
 use std::path::PathBuf;
 
 pub(crate) fn lint(files: &[PathBuf], rulesets: Option<&Vec<String>>) {
     let mut parsed_rulesets = Vec::new();
+
     if let Some(rulesets) = rulesets {
-        for ruleset_name in rulesets {
-            parsed_rulesets.extend(load_ruleset(ruleset_name));
+        for name in rulesets {
+            if let Ok(group) = load_group(name) {
+                for ruleset_name in &group.rulesets {
+                    parsed_rulesets.push(load_ruleset(ruleset_name));
+                }
+            } else {
+                // Load as a single ruleset if it's not a group
+                parsed_rulesets.push(load_ruleset(name));
+            }
         }
     } else {
         match load_index_file() {
             Ok(index) => {
                 for ruleset_name in index.rulesets.keys() {
-                    parsed_rulesets.extend(load_ruleset(ruleset_name));
+                    parsed_rulesets.push(load_ruleset(ruleset_name));
                 }
             }
             Err(err) => {

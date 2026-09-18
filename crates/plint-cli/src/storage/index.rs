@@ -24,6 +24,6 @@ impl IndexFile {
         self.groups
             .get(group_name)
             .cloned()
-            .ok_or_else(|| PlintIoError::NotFound(ruleset_name.to_string()))
+            .ok_or_else(|| PlintIoError::NotFound(group_name.to_string()))
     }
 }
