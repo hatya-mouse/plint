@@ -2,11 +2,12 @@ mod group;
 mod index;
 
 use crate::{
-    lint::{group::Group, index::IndexFile},
+    ruleset::{group::Group, index::IndexFile},
     utils::data_dir,
 };
 use plint_linter::Ruleset;
 
+#[derive(Debug)]
 pub(super) enum RulesetLoadError {
     RulesetNotFound(String),
     RulesetParseError(yaml_serde::Error),
@@ -17,6 +18,7 @@ pub(super) enum RulesetLoadError {
     IndexReadError(std::io::Error),
 }
 
+/// Loads the ruleset with the given name from the data directory.
 pub(super) fn load_ruleset(ruleset_name: &str) -> Vec<Result<Ruleset, RulesetLoadError>> {
     let Some(data_dir) = data_dir() else {
         return Vec::new();
@@ -45,6 +47,7 @@ pub(super) fn load_ruleset_with_index(
     index: &IndexFile,
 ) -> Vec<Result<Ruleset, RulesetLoadError>> {
     if let Some(ruleset_path) = index.rulesets.get(ruleset_name) {
+        // Load the ruleset if the ruleset name is found in the index
         match std::fs::read_to_string(ruleset_path) {
             Ok(ruleset_string) => vec![
                 yaml_serde::from_str::<Ruleset>(&ruleset_string)
@@ -53,6 +56,7 @@ pub(super) fn load_ruleset_with_index(
             Err(err) => vec![Err(RulesetLoadError::RulesetReadError(err))],
         }
     } else if let Some(group_path) = index.groups.get(ruleset_name) {
+        // Load the every single rulesets in the group recursively
         match std::fs::read_to_string(group_path) {
             Ok(group_string) => match yaml_serde::from_str::<Group>(&group_string) {
                 Ok(group) => group

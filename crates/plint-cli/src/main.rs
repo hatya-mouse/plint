@@ -1,11 +1,14 @@
 mod args;
 mod consts;
-mod lint;
+mod ruleset;
 mod utils;
 
-use crate::args::Commands;
+use crate::{
+    args::Commands,
+    ruleset::{RulesetLoadError, load_ruleset},
+};
 use clap::Parser;
-use lint::lint_doc;
+use plint_linter::{Document, Ruleset};
 
 fn main() {
     let cli = args::Cli::parse();
@@ -14,17 +17,35 @@ fn main() {
         Some(Commands::Lint { files, rulesets }) => {
             let mut parsed_rulesets = Vec::new();
             for ruleset_name in rulesets {
-                parsed_rulesets.extend(load_ruleset());
+                parsed_rulesets.extend(load_ruleset(ruleset_name));
             }
 
             for file in files {
                 let doc = match plint_linter::Document::from_file(file) {
                     Ok(doc) => doc,
-                    Err(e) => continue,
+                    Err(err) => {
+                        println!("{}", err);
+                        continue;
+                    }
                 };
-                lint_doc(&doc, &parsed_rulesets);
+
+                for result in &parsed_rulesets {
+                    process_ruleset(&doc, result);
+                }
             }
         }
         _ => (),
     };
+}
+
+fn process_ruleset(doc: &Document, result: &Result<Ruleset, RulesetLoadError>) {
+    match result {
+        Ok(ruleset) => {
+            let lint_results = ruleset.lint(doc);
+            println!("{:#?}", lint_results);
+        }
+        Err(err) => {
+            println!("{:#?}", err);
+        }
+    }
 }
