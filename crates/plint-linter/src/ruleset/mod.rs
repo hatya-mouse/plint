@@ -4,9 +4,10 @@ mod rule;
 pub use lint::{LintEntry, LintResult};
 pub use rule::Rule;
 
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Ruleset {
     pub name: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -15,7 +16,25 @@ pub struct Ruleset {
     pub description: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub version: Option<u64>,
+    #[serde(default)]
+    pub creation_time: DateTime<Utc>,
+    #[serde(default)]
+    pub modified_time: DateTime<Utc>,
     pub rules: Vec<Rule>,
+}
+
+impl Default for Ruleset {
+    fn default() -> Self {
+        Ruleset {
+            name: String::new(),
+            authors: None,
+            description: None,
+            version: None,
+            creation_time: Utc::now(),
+            modified_time: Utc::now(),
+            rules: Vec::new(),
+        }
+    }
 }
 
 impl Ruleset {
@@ -31,6 +50,8 @@ impl Ruleset {
             authors,
             description,
             version,
+            creation_time: Utc::now(),
+            modified_time: Utc::now(),
             rules: Vec::new(),
         }
     }
