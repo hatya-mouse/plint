@@ -1,6 +1,11 @@
+mod args;
+
+use clap::Parser;
 use plint_linter::ruleset::Ruleset;
 
 fn main() {
+    let cli = args::Cli::parse();
+
     let doc = plint_linter::Document::new(
         "hoge.txt".to_string(),
         r#"
