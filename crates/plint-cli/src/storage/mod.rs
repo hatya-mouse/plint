@@ -27,6 +27,22 @@ pub(super) fn load_ruleset(ruleset_name: &str) -> Vec<Result<Ruleset, PlintIoErr
     }
 }
 
+/// Saves the ruleset with the given name.
+pub(super) fn save_ruleset(ruleset_name: &str, ruleset: &Ruleset) -> Result<(), PlintIoError> {
+    let Some(data_dir) = data_dir() else {
+        return Err(PlintIoError::PathNotAvailable);
+    };
+
+    let ruleset_path = data_dir.join(ruleset_name).with_added_extension("yaml");
+    match yaml_serde::to_string(ruleset) {
+        Ok(ruleset_string) => match std::fs::write(ruleset_path, ruleset_string) {
+            Ok(_) => Ok(()),
+            Err(err) => Err(PlintIoError::RulesetReadError(err)),
+        },
+        Err(err) => Err(PlintIoError::RulesetParseError(err)),
+    }
+}
+
 /// Loads the index file.
 pub(super) fn load_index_file() -> Result<IndexFile, PlintIoError> {
     let Some(data_dir) = data_dir() else {

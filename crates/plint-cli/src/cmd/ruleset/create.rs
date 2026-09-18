@@ -1,6 +1,6 @@
 use crate::{
     storage::{load_index_file, write_index_file},
-    utils::{data_dir, name_validator},
+    utils::{data_dir, name_validator, version_validator},
 };
 use inquire::validator::MaxLengthValidator;
 use plint_linter::Ruleset;
@@ -11,6 +11,15 @@ pub(crate) fn create(
     mut description: Option<String>,
     mut version: Option<u64>,
 ) {
+    // Load the index file
+    let mut index_file = match load_index_file() {
+        Ok(index_file) => index_file,
+        Err(err) => {
+            eprintln!("Failed to load the index file: {:#?}", err);
+            return;
+        }
+    };
+
     // Ask the user for the information if not provided
     if name.is_none() {
         println!("Please enter the information for the new ruleset:");
@@ -35,26 +44,18 @@ pub(crate) fn create(
             .prompt()
             .ok();
         version = inquire::Text::new("Version")
+            .with_validator(version_validator)
             .prompt()
             .ok()
             .filter(|input| !input.trim().is_empty())
             .and_then(|input| input.trim().parse::<u64>().ok());
     }
 
-    // Ensure that the name exists
+    // Ensure that the name is not None
     let name = match name {
         Some(name) => name,
         None => {
             eprintln!("Failed to get the ruleset name");
-            return;
-        }
-    };
-
-    // Load the index file
-    let mut index_file = match load_index_file() {
-        Ok(index_file) => index_file,
-        Err(err) => {
-            eprintln!("Failed to load the index file: {:#?}", err);
             return;
         }
     };

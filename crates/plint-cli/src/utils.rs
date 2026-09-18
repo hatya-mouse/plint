@@ -31,3 +31,14 @@ pub(super) fn name_validator(input: &str) -> Result<Validation, CustomUserError>
         Ok(Validation::Valid)
     }
 }
+
+pub(super) fn version_validator(input: &str) -> Result<Validation, CustomUserError> {
+    if input.trim().is_empty() {
+        return Ok(Validation::Valid);
+    }
+
+    match input.trim().parse::<u64>() {
+        Ok(_) => Ok(Validation::Valid),
+        Err(_) => Ok(Validation::Invalid("Input must be a valid integer".into())),
+    }
+}

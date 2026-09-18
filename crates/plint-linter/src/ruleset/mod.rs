@@ -59,4 +59,9 @@ impl Ruleset {
     pub fn from_yaml(yaml_str: &str) -> yaml_serde::Result<Self> {
         yaml_serde::from_str(yaml_str)
     }
+
+    /// Updates the modified time of the ruleset to the current time.
+    pub fn modified(&mut self) {
+        self.modified_time = Utc::now();
+    }
 }
