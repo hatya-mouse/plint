@@ -17,19 +17,30 @@ fn main() {
         Some(Commands::Lint { files, rulesets }) => cmd::lint::lint(files, rulesets.as_ref()),
         Some(Commands::Ruleset { command }) => match command {
             Some(RulesetCommands::Check { rulesets }) => {}
-            Some(RulesetCommands::Create { ruleset }) => cmd::ruleset::create(ruleset),
+            Some(RulesetCommands::Create {
+                name,
+                authors,
+                description,
+                version,
+            }) => cmd::ruleset::create(
+                name.clone(),
+                authors.clone(),
+                description.clone(),
+                version.clone(),
+            ),
             Some(RulesetCommands::Edit { ruleset }) => {}
             Some(RulesetCommands::List) => {}
             None => (),
         },
         Some(Commands::Group { command }) => match command {
-            Some(GroupCommands::Create { group }) => {}
+            Some(GroupCommands::Create { name }) => {}
             Some(GroupCommands::Edit { group }) => {}
             Some(GroupCommands::Add { group, rulesets }) => {}
             Some(GroupCommands::RemoveSet { group, rulesets }) => {}
             Some(GroupCommands::List) => {}
             None => (),
         },
+        Some(Commands::Remove { rulesets, force }) => {}
         None => (),
     };
 }

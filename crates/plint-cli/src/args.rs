@@ -34,24 +34,47 @@ pub(super) enum Commands {
         #[command(subcommand)]
         command: Option<GroupCommands>,
     },
+    /// Remove ruleset(s) or group(s) from the local storage.
+    /// Removing group(s) does not remove its rulesets
+    Remove {
+        /// Name(s) of the ruleset(s) and group(s) to remove.
+        /// Leave this empty to select rulesets and groups interactively
+        rulesets: Vec<String>,
+        /// Whether to remove the ruleset(s) and group(s) forcibly without confirmation
+        #[arg(short)]
+        force: bool,
+    },
 }
 
 #[derive(Subcommand)]
 pub(super) enum RulesetCommands {
     /// Check the validity of the ruleset(s)
     Check {
-        /// Name(s) of the ruleset(s) and group(s) to verify
+        /// Name(s) of the ruleset(s) and group(s) to verify.
+        /// Leave this empty to verify all available rulesets
         rulesets: Vec<String>,
     },
     /// Create a new ruleset
     Create {
-        /// Name of the ruleset to edit
-        ruleset: String,
+        /// Name of the ruleset to create.
+        /// Leave this empty to create a new ruleset interactively
+        #[arg(short, long)]
+        name: Option<String>,
+        /// Authors of the ruleset to create.
+        #[arg(short, long)]
+        authors: Option<String>,
+        /// Description of the ruleset to create.
+        #[arg(short, long)]
+        description: Option<String>,
+        /// Version of the ruleset to create.
+        #[arg(short, long)]
+        version: Option<u64>,
     },
     /// Edit an existing ruleset interactively
     Edit {
-        /// Name of the ruleset to edit
-        ruleset: String,
+        /// Name of the ruleset to edit.
+        /// Leave this empty to select a ruleset interactively
+        ruleset: Option<String>,
     },
     /// List all installed or locally available rulesets
     List,
@@ -60,9 +83,18 @@ pub(super) enum RulesetCommands {
 #[derive(Subcommand)]
 pub(super) enum GroupCommands {
     /// Create a new ruleset group
-    Create { group: String },
+    Create {
+        /// Name of the group to create.
+        /// Leave this empty to create a new group interactively
+        #[arg(short, long)]
+        name: Option<String>,
+    },
     /// Edit an existing ruleset group interactively
-    Edit { group: String },
+    Edit {
+        /// Name of the group to edit.
+        /// Leave this empty to select a group interactively
+        group: Option<String>,
+    },
     /// Add ruleset(s) to the group
     Add {
         /// Name of the group to add the ruleset to

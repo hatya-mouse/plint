@@ -1,14 +1,59 @@
 use crate::{
     storage::{load_index_file, write_index_file},
-    utils::data_dir,
+    utils::{data_dir, name_validator},
 };
+use inquire::validator::MaxLengthValidator;
 use plint_linter::Ruleset;
 
-pub(crate) fn create(name: &str) {
-    let ruleset = Ruleset::new_named(name);
+pub(crate) fn create(
+    mut name: Option<String>,
+    mut authors: Option<String>,
+    mut description: Option<String>,
+    mut version: Option<u64>,
+) {
+    // Ask the user for the information if not provided
+    if name.is_none() {
+        println!("Please enter the information for the new ruleset:");
+
+        name = inquire::Text::new("Name")
+            .with_validator(name_validator)
+            .prompt()
+            .ok();
+        authors = inquire::Text::new("Authors")
+            .with_validator(
+                MaxLengthValidator::new(256).with_message("Authors must be 256 characters or less"),
+            )
+            .with_initial_value(&authors.unwrap_or_default())
+            .prompt()
+            .ok();
+        description = inquire::Text::new("Description")
+            .with_validator(
+                MaxLengthValidator::new(4096)
+                    .with_message("Description must be 4096 characters or less"),
+            )
+            .with_initial_value(&description.unwrap_or_default())
+            .prompt()
+            .ok();
+        version = inquire::Text::new("Version")
+            .prompt()
+            .ok()
+            .filter(|input| !input.trim().is_empty())
+            .and_then(|input| input.trim().parse::<u64>().ok());
+    }
+
+    // Ensure that the name exists
+    let name = match name {
+        Some(name) => name,
+        None => {
+            eprintln!("Failed to get the ruleset name");
+            return;
+        }
+    };
+
+    let ruleset = Ruleset::new_empty(name.clone(), authors, description, version);
     let dest_path = match data_dir().map(|path| {
         path.join("rulesets")
-            .join(name)
+            .join(&name)
             .with_added_extension("yaml")
     }) {
         Some(dest_path) => dest_path,

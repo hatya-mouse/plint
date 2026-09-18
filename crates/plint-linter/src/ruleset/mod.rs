@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 pub struct Ruleset {
     pub name: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub author: Option<String>,
+    pub authors: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -19,12 +19,18 @@ pub struct Ruleset {
 }
 
 impl Ruleset {
-    pub fn new_named(name: &str) -> Self {
+    /// Creates a new empty ruleset with given name, authors, description, and version.
+    pub fn new_empty(
+        name: String,
+        authors: Option<String>,
+        description: Option<String>,
+        version: Option<u64>,
+    ) -> Self {
         Self {
-            name: name.to_string(),
-            author: None,
-            description: None,
-            version: None,
+            name,
+            authors,
+            description,
+            version,
             rules: Vec::new(),
         }
     }
