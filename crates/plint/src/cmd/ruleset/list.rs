@@ -1,7 +1,7 @@
-use crate::{storage::load_index_file, utils::hyperlink};
+use crate::{storage::IndexFile, utils::hyperlink};
 
 pub(crate) fn list(paths: bool, paths_nolinks: bool) {
-    let index_file = match load_index_file() {
+    let index_file = match IndexFile::load() {
         Ok(index_file) => index_file,
         Err(e) => {
             eprintln!("Failed to load index file: {:#?}", e);

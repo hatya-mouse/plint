@@ -1,4 +1,4 @@
-use crate::PlintIoError;
+use crate::{PlintIoError, utils::data_dir};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, path::PathBuf};
 
@@ -25,5 +25,45 @@ impl IndexFile {
             .get(group_name)
             .cloned()
             .ok_or_else(|| PlintIoError::NotFound(group_name.to_string()))
+    }
+
+    // --- INDEX FILE STORAGE OPERATION ---
+
+    /// Loads the index file.
+    pub(crate) fn load() -> Result<IndexFile, PlintIoError> {
+        let Some(data_dir) = data_dir() else {
+            return Err(PlintIoError::PathNotAvailable);
+        };
+
+        let index_path = data_dir.join("index").with_added_extension("yaml");
+        if !index_path.exists() {
+            return Ok(IndexFile::default());
+        }
+
+        match std::fs::read_to_string(index_path) {
+            Ok(index_string) => match yaml_serde::from_str::<IndexFile>(&index_string) {
+                Ok(index) => Ok(index),
+                Err(err) => Err(PlintIoError::YamlParseError(err)),
+            },
+            Err(err) => Err(PlintIoError::IoError(err)),
+        }
+    }
+
+    /// Writes the given index file to the data directory.
+    pub(crate) fn save(&self) -> Result<(), PlintIoError> {
+        match yaml_serde::to_string(self) {
+            Ok(index_string) => {
+                let Some(data_dir) = data_dir() else {
+                    return Err(PlintIoError::PathNotAvailable);
+                };
+                let index_path = data_dir.join("index").with_added_extension("yaml");
+
+                match std::fs::write(index_path, index_string) {
+                    Ok(_) => Ok(()),
+                    Err(err) => Err(PlintIoError::IoError(err)),
+                }
+            }
+            Err(err) => Err(PlintIoError::YamlParseError(err)),
+        }
     }
 }

@@ -1,4 +1,4 @@
-use crate::{PlintIoError, storage::load_index_file};
+use crate::{PlintIoError, storage::IndexFile};
 
 pub(crate) fn edit(ruleset: &str) {
     match open_ruleset(ruleset) {
@@ -8,6 +8,6 @@ pub(crate) fn edit(ruleset: &str) {
 }
 
 fn open_ruleset(ruleset: &str) -> Result<(), PlintIoError> {
-    let ruleset_path = load_index_file()?.ruleset_path(ruleset)?;
+    let ruleset_path = IndexFile::load()?.ruleset_path(ruleset)?;
     open::that(ruleset_path.as_os_str()).map_err(PlintIoError::IoError)
 }
