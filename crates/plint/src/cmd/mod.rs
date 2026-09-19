@@ -79,12 +79,12 @@ pub(super) enum RulesetCommands {
     },
     /// List all installed or locally available rulesets
     List {
-        /// Show the paths of the rulesets
+        /// Show the path of the rulesets
         #[arg(short, long)]
-        paths: bool,
-        /// Show the paths of the rulesets without hyperlinks
+        path: bool,
+        /// Show the path of the rulesets without hyperlinks
         #[arg(long)]
-        paths_nolinks: bool,
+        path_nolink: bool,
     },
 }
 
@@ -92,10 +92,8 @@ pub(super) enum RulesetCommands {
 pub(super) enum GroupCommands {
     /// Create a new ruleset group
     Create {
-        /// Name of the group to create.
-        /// Leave this empty to create a new group interactively
-        #[arg(short, long)]
-        name: Option<String>,
+        /// Name of the group to create
+        name: String,
     },
     /// Edit an existing ruleset group in the default editor
     Edit {
@@ -121,11 +119,11 @@ pub(super) enum GroupCommands {
         /// Show the rulesets in the group
         #[arg(short, long)]
         rulesets: bool,
-        /// Show the paths of the groups (and rulesets, if --rulesets is specified)
+        /// Show the path of the groups (and rulesets, if --rulesets is specified)
         #[arg(short, long)]
-        paths: bool,
-        /// Show the paths of the groups (and rulesets, if --rulesets is specified) without hyperlinks
+        path: bool,
+        /// Show the path of the groups (and rulesets, if --rulesets is specified) without hyperlinks
         #[arg(long)]
-        paths_nolinks: bool,
+        path_nolink: bool,
     },
 }

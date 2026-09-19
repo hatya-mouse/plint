@@ -12,35 +12,34 @@ use clap::Parser;
 fn main() {
     let cli = cmd::Cli::parse();
 
-    match &cli.command {
-        Some(Commands::Lint { files, rulesets }) => cmd::lint::lint(files, rulesets),
+    match cli.command {
+        Some(Commands::Lint { files, rulesets }) => cmd::lint::lint(&files, &rulesets),
         Some(Commands::Ruleset { command }) => match command {
-            Some(RulesetCommands::Check { rulesets }) => cmd::ruleset::check(rulesets),
+            Some(RulesetCommands::Check { rulesets }) => cmd::ruleset::check(&rulesets),
             Some(RulesetCommands::Create {
                 name,
                 authors,
                 description,
                 version,
-            }) => {
-                cmd::ruleset::create(name.clone(), authors.clone(), description.clone(), *version)
+            }) => cmd::ruleset::create(name, authors, description, version),
+            Some(RulesetCommands::Edit { ruleset }) => cmd::ruleset::edit(&ruleset),
+            Some(RulesetCommands::List { path, path_nolink }) => {
+                cmd::ruleset::list(path, path_nolink)
             }
-            Some(RulesetCommands::Edit { ruleset }) => cmd::ruleset::edit(ruleset),
-            Some(RulesetCommands::List {
-                paths,
-                paths_nolinks,
-            }) => cmd::ruleset::list(*paths, *paths_nolinks),
             None => (),
         },
         Some(Commands::Group { command }) => match command {
-            Some(GroupCommands::Create { name }) => {}
-            Some(GroupCommands::Edit { group }) => {}
-            Some(GroupCommands::Add { group, rulesets }) => {}
-            Some(GroupCommands::RemoveSet { group, rulesets }) => {}
+            Some(GroupCommands::Create { name }) => cmd::group::create(name),
+            Some(GroupCommands::Edit { group }) => cmd::group::edit(&group),
+            Some(GroupCommands::Add { group, rulesets }) => cmd::group::add(&group, rulesets),
+            Some(GroupCommands::RemoveSet { group, rulesets }) => {
+                cmd::group::remove_set(&group, &rulesets)
+            }
             Some(GroupCommands::List {
                 rulesets,
-                paths,
-                paths_nolinks,
-            }) => {}
+                path,
+                path_nolink,
+            }) => cmd::group::list(rulesets, path, path_nolink),
             None => (),
         },
         Some(Commands::Remove { rulesets, force }) => {}

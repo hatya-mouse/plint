@@ -1,6 +1,9 @@
-use crate::{storage::IndexFile, utils::hyperlink};
+use crate::{
+    storage::{Group, IndexFile},
+    utils::hyperlink,
+};
 
-pub(crate) fn list(paths: bool, paths_nolinks: bool) {
+pub(crate) fn list(rulesets: bool, path: bool, path_nolink: bool) {
     let index_file = match IndexFile::load() {
         Ok(index_file) => index_file,
         Err(e) => {
@@ -10,12 +13,25 @@ pub(crate) fn list(paths: bool, paths_nolinks: bool) {
     };
 
     for (group_name, group_path) in index_file.groups {
-        println!("{}", group_name);
+        if path_nolink {
+            println!("{}: {}", group_name, group_path.display());
+        } else if path {
+            println!("{}: {}", group_name, hyperlink(&group_path));
+        } else {
+            println!("{}", group_name);
+        }
 
-        if paths_nolinks {
-            println!("  {}", group_path.display());
-        } else if paths {
-            println!("  {}", hyperlink(&group_path));
+        if rulesets {
+            match Group::load(&group_name) {
+                Ok(group) => {
+                    for ruleset in group.rulesets {
+                        println!("  - {}", ruleset);
+                    }
+                }
+                Err(err) => {
+                    eprintln!("  Failed to load group '{}': {:#?}", group_name, err);
+                }
+            }
         }
     }
 }

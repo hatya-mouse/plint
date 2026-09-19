@@ -1,7 +1,7 @@
 use crate::storage::Group;
 
-pub(crate) fn add(group: String, rulesets: Vec<String>) {
-    let mut group = match Group::load(&group) {
+pub(crate) fn add(group: &str, rulesets: Vec<String>) {
+    let mut group = match Group::load(group) {
         Ok(group) => group,
         Err(err) => {
             eprintln!("Failed to load the group: {:#?}", err);
@@ -10,12 +10,12 @@ pub(crate) fn add(group: String, rulesets: Vec<String>) {
     };
 
     // Add the specified rulesets from the group
-    for ruleset in &rulesets {
-        if group.rulesets.contains(ruleset) {
+    for ruleset in rulesets {
+        if group.rulesets.contains(&ruleset) {
             println!("Ruleset already exists in the group: {}", ruleset);
         } else {
-            group.rulesets.push(ruleset.clone());
             println!("Added ruleset: {}", ruleset);
+            group.rulesets.push(ruleset);
         }
     }
 
