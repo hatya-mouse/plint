@@ -5,9 +5,10 @@ edition = "2024"
 
 [dependencies]
 clap = { version = "4.6.7", features = ["derive"] }
+crossterm = "0.29.0"
 dirs = "7.0.0"
-inquire = { version = "0.9.4", features = ["editor"] }
 plint-linter = { workspace = true }
+ratatui = "0.30.2"
 serde = "1.0.229"
 strum = "0.28.0"
 strum_macros = "0.28.0"

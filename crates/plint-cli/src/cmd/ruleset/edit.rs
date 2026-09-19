@@ -2,7 +2,6 @@ use crate::{
     storage::{create_ruleset, load_index_file, load_ruleset, remove_ruleset, save_ruleset},
     tui::{name_validator, version_validator},
 };
-use inquire::{error::InquireResult, validator::MaxLengthValidator};
 use plint_linter::{Rule, Ruleset, checker::ALL_CHECKERS, ruleset::Severity};
 use std::fmt::Display;
 use strum::IntoEnumIterator;

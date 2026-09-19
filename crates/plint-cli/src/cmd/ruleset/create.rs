@@ -1,10 +1,21 @@
 use crate::{
     storage::{create_ruleset, load_index_file},
-    tui::{name_validator, version_validator},
+    tui::{InlineTerminal, name_validator, version_validator},
     utils::data_dir,
 };
-use inquire::validator::{MaxLengthValidator, Validation};
 use plint_linter::Ruleset;
+
+#[derive(Default)]
+struct CreateApp;
+
+impl CreateApp {
+    fn run(&mut self, terminal: &mut InlineTerminal) -> std::io::Result<()> {
+        loop {
+            terminal
+        }
+        Ok(())
+    }
+}
 
 pub(crate) fn create(
     mut name: Option<String>,
