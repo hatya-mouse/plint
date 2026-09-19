@@ -1,17 +1,16 @@
-mod args;
 mod cmd;
 mod consts;
 mod storage;
 mod utils;
 
 use crate::{
-    args::{Commands, GroupCommands, RulesetCommands},
+    cmd::{Commands, GroupCommands, RulesetCommands},
     storage::PlintIoError,
 };
 use clap::Parser;
 
 fn main() {
-    let cli = args::Cli::parse();
+    let cli = cmd::Cli::parse();
 
     match &cli.command {
         Some(Commands::Lint { files, rulesets }) => cmd::lint::lint(files, rulesets.as_ref()),
