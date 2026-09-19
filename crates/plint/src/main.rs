@@ -28,7 +28,7 @@ fn main() {
         Some(Commands::Group { command }) => match command {
             GroupCommands::Create { name } => cmd::group::create(name),
             GroupCommands::Edit { group } => cmd::group::edit(&group),
-            GroupCommands::Add { group, rulesets } => cmd::group::add(&group, rulesets),
+            GroupCommands::AddSet { group, rulesets } => cmd::group::add_set(&group, rulesets),
             GroupCommands::RemoveSet { group, rulesets } => {
                 cmd::group::remove_set(&group, &rulesets)
             }

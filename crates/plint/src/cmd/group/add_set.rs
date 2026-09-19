@@ -1,6 +1,6 @@
 use crate::storage::Group;
 
-pub(crate) fn add(group: &str, rulesets: Vec<String>) {
+pub(crate) fn add_set(group: &str, rulesets: Vec<String>) {
     if rulesets.is_empty() {
         eprintln!("No rulesets specified to be added.");
         return;

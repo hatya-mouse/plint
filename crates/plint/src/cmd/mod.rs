@@ -101,7 +101,7 @@ pub(super) enum GroupCommands {
         group: String,
     },
     /// Add rulesets to the group
-    Add {
+    AddSet {
         /// Name of the group to add the ruleset to
         group: String,
         /// Names of the rulesets to add to the group
