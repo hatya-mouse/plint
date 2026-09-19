@@ -1,4 +1,7 @@
-use crate::{storage::create_ruleset, utils::data_dir};
+use crate::{
+    storage::{IndexFile, RulesetIo},
+    utils::data_dir,
+};
 use plint_linter::Ruleset;
 
 pub(crate) fn create(
@@ -7,6 +10,19 @@ pub(crate) fn create(
     description: Option<String>,
     version: Option<u64>,
 ) {
+    let index_file = match IndexFile::load() {
+        Ok(index_file) => index_file,
+        Err(err) => {
+            eprintln!("Failed to load index file: {:#?}", err);
+            return;
+        }
+    };
+
+    if index_file.is_name_registered(&name) {
+        eprintln!("Ruleset name already exists: {}", name);
+        return;
+    }
+
     let ruleset = Ruleset::new_empty(name.clone(), authors, description, version);
     let dest_path = match data_dir().map(|path| {
         path.join("rulesets")
@@ -24,7 +40,7 @@ pub(crate) fn create(
     dest_path.parent().map(std::fs::create_dir_all);
 
     // Write the ruleset
-    match create_ruleset(&ruleset) {
+    match ruleset.save() {
         Ok(_) => (),
         Err(err) => {
             eprintln!("Failed to create a ruleset: {:#?}", err);

@@ -10,7 +10,6 @@ use plint_linter::Ruleset;
 #[derive(Debug)]
 pub(super) enum PlintIoError {
     PathNotAvailable,
-    DuplicateName(String),
     NotFound(String),
     YamlParseError(yaml_serde::Error),
     IoError(std::io::Error),
@@ -21,6 +20,7 @@ pub(super) trait RulesetIo {
     fn load(name: &str) -> Result<Ruleset, PlintIoError>;
 
     /// Saves the ruleset to the storage, adding it to the index file if it doesn't already exist.
+    /// This overwrites the existing ruleset file if it already exists.
     fn save(&self) -> Result<(), PlintIoError>;
 
     /// Removes the ruleset with the given name.
@@ -41,12 +41,6 @@ impl RulesetIo for Ruleset {
     fn save(&self) -> Result<(), PlintIoError> {
         let mut index_file = IndexFile::load()?;
 
-        if index_file.rulesets.contains_key(&self.name)
-            || index_file.groups.contains_key(&self.name)
-        {
-            return Err(PlintIoError::DuplicateName(self.name.to_string()));
-        }
-
         let Some(ruleset_path) =
             rulesets_dir().map(|path| path.join(&self.name).with_added_extension("yaml"))
         else {
@@ -54,9 +48,9 @@ impl RulesetIo for Ruleset {
         };
 
         // Register the path to the newly created ruleset file in the index file
-        index_file
+        let original_entry = index_file
             .rulesets
-            .insert(self.name.to_string(), ruleset_path.clone());
+            .insert(self.name.clone(), ruleset_path.clone());
         IndexFile::save(&index_file)?;
 
         let result = match yaml_serde::to_string(self) {
@@ -67,9 +61,15 @@ impl RulesetIo for Ruleset {
             Err(err) => Err(PlintIoError::YamlParseError(err)),
         };
 
-        // In case of an error, remove the entry from the index file
+        // In case of an error, revert the entry from the index file
         if result.is_err() {
-            index_file.rulesets.remove(&self.name);
+            if let Some(original_entry) = original_entry {
+                index_file
+                    .rulesets
+                    .insert(self.name.clone(), original_entry);
+            } else {
+                index_file.rulesets.remove(&self.name);
+            }
             IndexFile::save(&index_file)?;
         }
 

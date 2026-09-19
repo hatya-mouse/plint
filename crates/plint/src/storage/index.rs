@@ -27,6 +27,11 @@ impl IndexFile {
             .ok_or_else(|| PlintIoError::NotFound(group_name.to_string()))
     }
 
+    /// Returns whether the name is already registered as either a ruleset or a group.
+    pub(crate) fn is_name_registered(&self, name: &str) -> bool {
+        self.rulesets.contains_key(name) || self.groups.contains_key(name)
+    }
+
     // --- INDEX FILE STORAGE OPERATION ---
 
     /// Loads the index file.
