@@ -68,12 +68,11 @@ pub(super) enum RulesetCommands {
         #[arg(short, long)]
         version: Option<u64>,
     },
-    /// Edit an existing ruleset interactively
-    // Edit {
-    //     /// Name of the ruleset to edit.
-    //     /// Leave this empty to select a ruleset interactively
-    //     ruleset: Option<String>,
-    // },
+    /// Edit an existing ruleset in the default editor
+    Edit {
+        /// Name of the ruleset to edit
+        ruleset: String,
+    },
     /// List all installed or locally available rulesets
     List,
 }

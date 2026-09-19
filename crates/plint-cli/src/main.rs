@@ -25,6 +25,7 @@ fn main() {
             }) => {
                 cmd::ruleset::create(name.clone(), authors.clone(), description.clone(), *version)
             }
+            Some(RulesetCommands::Edit { ruleset }) => cmd::ruleset::edit(ruleset),
             Some(RulesetCommands::List) => {}
             None => (),
         },
