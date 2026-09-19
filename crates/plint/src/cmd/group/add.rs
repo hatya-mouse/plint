@@ -1,6 +1,11 @@
 use crate::storage::Group;
 
 pub(crate) fn add(group: &str, rulesets: Vec<String>) {
+    if rulesets.is_empty() {
+        eprintln!("No rulesets specified to be added.");
+        return;
+    }
+
     let mut group = match Group::load(group) {
         Ok(group) => group,
         Err(err) => {

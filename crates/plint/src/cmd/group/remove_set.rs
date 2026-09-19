@@ -1,6 +1,11 @@
 use crate::storage::Group;
 
 pub(crate) fn remove_set(group: &str, rulesets: &[String]) {
+    if rulesets.is_empty() {
+        eprintln!("No rulesets specified to be removed.");
+        return;
+    }
+
     let mut group = match Group::load(group) {
         Ok(group) => group,
         Err(err) => {
