@@ -105,6 +105,7 @@ pub(super) enum GroupCommands {
         /// Name of the group to add the ruleset to
         group: String,
         /// Names of the rulesets to add to the group
+        #[arg(short, long)]
         rulesets: Vec<String>,
     },
     /// Remove rulesets from the group
@@ -112,6 +113,7 @@ pub(super) enum GroupCommands {
         /// Name of the group to add the ruleset to
         group: String,
         /// Names of the rulesets to add to the group
+        #[arg(short, long)]
         rulesets: Vec<String>,
     },
     /// List all installed or locally available groups
