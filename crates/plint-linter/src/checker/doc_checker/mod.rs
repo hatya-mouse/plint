@@ -21,14 +21,14 @@ pub(super) fn new_std_checker(
     args: Option<&yaml_serde::Mapping>,
 ) -> Result<CheckerEnum, LinterError> {
     match check {
-        "std.byte-count" => Ok(CheckerEnum::StdByteCount(ByteCountChecker::new(args)?)),
-        "std.char-count" => Ok(CheckerEnum::StdCharCount(CharCountChecker::new(args)?)),
-        "std.line-count" => Ok(CheckerEnum::StdLineCount(LineCountChecker::new(args)?)),
-        "std.regex" => Ok(CheckerEnum::StdRegex(RegexChecker::new(args)?)),
-        "std.sentence-count" => Ok(CheckerEnum::StdSentenceCount(SentenceCountChecker::new(
+        "doc.byte-count" => Ok(CheckerEnum::DocByteCount(ByteCountChecker::new(args)?)),
+        "doc.char-count" => Ok(CheckerEnum::DocCharCount(CharCountChecker::new(args)?)),
+        "doc.line-count" => Ok(CheckerEnum::DocLineCount(LineCountChecker::new(args)?)),
+        "doc.regex" => Ok(CheckerEnum::DocRegex(RegexChecker::new(args)?)),
+        "doc.sentence-count" => Ok(CheckerEnum::DocSentenceCount(SentenceCountChecker::new(
             args,
         )?)),
-        "std.word-count" => Ok(CheckerEnum::StdWordCount(WordCountChecker::new(args)?)),
+        "doc.word-count" => Ok(CheckerEnum::DocWordCount(WordCountChecker::new(args)?)),
         _ => Err(LinterError::UnknownChecker(check.to_string())),
     }
 }

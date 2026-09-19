@@ -1,17 +1,17 @@
-mod std_checker;
+mod doc_checker;
 mod variants;
 
 pub(crate) use variants::checker_from;
 
-use crate::checker::std_checker::{
+use crate::checker::doc_checker::{
     sentence_count::SentenceCountChecker, word_count::WordCountChecker,
 };
 use crate::{Document, LinterError, Match};
-use enum_dispatch::enum_dispatch;
-use std_checker::{
+use doc_checker::{
     byte_count::ByteCountChecker, char_count::CharCountChecker, line_count::LineCountChecker,
     regex::RegexChecker,
 };
+use enum_dispatch::enum_dispatch;
 
 pub(crate) enum CheckResult {
     Matches(Vec<Match>),
@@ -29,19 +29,19 @@ pub(crate) trait Checker {
 
 #[enum_dispatch(Checker)]
 pub(crate) enum CheckerEnum {
-    StdByteCount(ByteCountChecker),
-    StdCharCount(CharCountChecker),
-    StdLineCount(LineCountChecker),
-    StdRegex(RegexChecker),
-    StdSentenceCount(SentenceCountChecker),
-    StdWordCount(WordCountChecker),
+    DocByteCount(ByteCountChecker),
+    DocCharCount(CharCountChecker),
+    DocLineCount(LineCountChecker),
+    DocRegex(RegexChecker),
+    DocSentenceCount(SentenceCountChecker),
+    DocWordCount(WordCountChecker),
 }
 
 pub const ALL_CHECKERS: &[&str] = &[
-    "std.byte-count",
-    "std.char-count",
-    "std.line-count",
-    "std.regex",
-    "std.sentence-count",
-    "std.word-count",
+    "doc.byte-count",
+    "doc.char-count",
+    "doc.line-count",
+    "doc.regex",
+    "doc.sentence-count",
+    "doc.word-count",
 ];
