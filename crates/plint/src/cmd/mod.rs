@@ -31,12 +31,12 @@ pub(super) enum Commands {
     /// Manage rulesets
     Ruleset {
         #[command(subcommand)]
-        command: Option<RulesetCommands>,
+        command: RulesetCommands,
     },
     /// Manage groups of rulesets
     Group {
         #[command(subcommand)]
-        command: Option<GroupCommands>,
+        command: GroupCommands,
     },
     /// Remove rulesets or groups from the local storage.
     /// Removing groups does not remove its rulesets
