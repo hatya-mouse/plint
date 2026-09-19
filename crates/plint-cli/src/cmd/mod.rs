@@ -26,7 +26,7 @@ pub(super) enum Commands {
         /// Optional name(s) of the ruleset(s) and group(s) to use for linting.
         /// Leave this empty to use all available rulesets
         #[arg(short, long)]
-        rulesets: Option<Vec<String>>,
+        rulesets: Vec<String>,
     },
     /// Manage rulesets
     Ruleset {
@@ -78,7 +78,14 @@ pub(super) enum RulesetCommands {
         ruleset: String,
     },
     /// List all installed or locally available rulesets
-    List,
+    List {
+        /// Show the paths of the rulesets
+        #[arg(short, long)]
+        paths: bool,
+        /// Show the paths of the rulesets without hyperlinks
+        #[arg(long)]
+        paths_nolinks: bool,
+    },
 }
 
 #[derive(Subcommand)]

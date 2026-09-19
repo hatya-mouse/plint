@@ -1,36 +1,9 @@
-use crate::{
-    PlintIoError,
-    storage::{load_group, load_index_file, load_ruleset},
-};
+use crate::{PlintIoError, storage::get_rulesets_and_groups};
 use plint_linter::{Document, Ruleset};
 use std::path::PathBuf;
 
-pub(crate) fn lint(files: &[PathBuf], rulesets: Option<&Vec<String>>) {
-    let mut parsed_rulesets = Vec::new();
-
-    if let Some(rulesets) = rulesets {
-        for name in rulesets {
-            if let Ok(group) = load_group(name) {
-                for ruleset_name in &group.rulesets {
-                    parsed_rulesets.push(load_ruleset(ruleset_name));
-                }
-            } else {
-                // Load as a single ruleset if it's not a group
-                parsed_rulesets.push(load_ruleset(name));
-            }
-        }
-    } else {
-        match load_index_file() {
-            Ok(index) => {
-                for ruleset_name in index.rulesets.keys() {
-                    parsed_rulesets.push(load_ruleset(ruleset_name));
-                }
-            }
-            Err(err) => {
-                parsed_rulesets.push(Err(err));
-            }
-        }
-    }
+pub(crate) fn lint(files: &[PathBuf], rulesets: &[String]) {
+    let parsed_rulesets = get_rulesets_and_groups(rulesets);
 
     for file in files {
         let doc = match plint_linter::Document::from_file(file) {

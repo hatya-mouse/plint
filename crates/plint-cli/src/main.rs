@@ -13,9 +13,9 @@ fn main() {
     let cli = cmd::Cli::parse();
 
     match &cli.command {
-        Some(Commands::Lint { files, rulesets }) => cmd::lint::lint(files, rulesets.as_ref()),
+        Some(Commands::Lint { files, rulesets }) => cmd::lint::lint(files, rulesets),
         Some(Commands::Ruleset { command }) => match command {
-            Some(RulesetCommands::Check { rulesets }) => {}
+            Some(RulesetCommands::Check { rulesets }) => cmd::ruleset::check(rulesets),
             Some(RulesetCommands::Create {
                 name,
                 authors,
@@ -25,7 +25,10 @@ fn main() {
                 cmd::ruleset::create(name.clone(), authors.clone(), description.clone(), *version)
             }
             Some(RulesetCommands::Edit { ruleset }) => cmd::ruleset::edit(ruleset),
-            Some(RulesetCommands::List) => {}
+            Some(RulesetCommands::List {
+                paths,
+                paths_nolinks,
+            }) => cmd::ruleset::list(*paths, *paths_nolinks),
             None => (),
         },
         Some(Commands::Group { command }) => match command {

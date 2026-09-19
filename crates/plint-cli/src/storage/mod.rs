@@ -116,6 +116,38 @@ pub(super) fn remove_ruleset(ruleset_name: &str) -> Result<(), PlintIoError> {
     write_index_file(&index_file)
 }
 
+// --- MULTIPLE RULESETS ---
+
+pub(super) fn get_rulesets_and_groups(rulesets: &[String]) -> Vec<Result<Ruleset, PlintIoError>> {
+    let mut parsed_rulesets = Vec::new();
+
+    if rulesets.is_empty() {
+        match load_index_file() {
+            Ok(index) => {
+                for ruleset_name in index.rulesets.keys() {
+                    parsed_rulesets.push(load_ruleset(ruleset_name));
+                }
+            }
+            Err(err) => {
+                parsed_rulesets.push(Err(err));
+            }
+        }
+    } else {
+        for name in rulesets {
+            if let Ok(group) = load_group(name) {
+                for ruleset_name in &group.rulesets {
+                    parsed_rulesets.push(load_ruleset(ruleset_name));
+                }
+            } else {
+                // Load as a single ruleset if it's not a group
+                parsed_rulesets.push(load_ruleset(name));
+            }
+        }
+    }
+
+    parsed_rulesets
+}
+
 // --- INDEX FILE OPERATION ---
 
 /// Loads the index file.
