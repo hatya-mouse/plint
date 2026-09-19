@@ -62,6 +62,7 @@ impl IndexFile {
                     return Err(PlintIoError::PathNotAvailable);
                 };
                 let index_path = data_dir.join("index").with_added_extension("yaml");
+                data_dir.parent().map(std::fs::create_dir_all);
 
                 match std::fs::write(index_path, index_string) {
                     Ok(_) => Ok(()),

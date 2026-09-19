@@ -8,6 +8,14 @@ pub(crate) struct Group {
 }
 
 impl Group {
+    /// Creates a new group with the given name.
+    pub(crate) fn new(name: String) -> Self {
+        Group {
+            name,
+            rulesets: Vec::new(),
+        }
+    }
+
     /// Loads the group with the given name from the data directory.
     pub(crate) fn load(group_name: &str) -> Result<Group, PlintIoError> {
         // Get the group path from the index file
@@ -28,6 +36,7 @@ impl Group {
         else {
             return Err(PlintIoError::PathNotAvailable);
         };
+        group_path.parent().map(std::fs::create_dir_all);
 
         // Register the path to the newly created ruleset file in the index file
         let original_entry = index_file

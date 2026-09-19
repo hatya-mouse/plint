@@ -32,6 +32,7 @@ impl RulesetIo for Ruleset {
         else {
             return Err(PlintIoError::PathNotAvailable);
         };
+        ruleset_path.parent().map(std::fs::create_dir_all);
 
         // Register the path to the newly created ruleset file in the index file
         let original_entry = index_file
