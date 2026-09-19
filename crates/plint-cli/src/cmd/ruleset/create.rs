@@ -1,9 +1,10 @@
 use crate::{
     storage::{create_ruleset, load_index_file},
-    tui::{InlineTerminal, name_validator, version_validator},
+    tui::InlineTerminal,
     utils::data_dir,
 };
 use plint_linter::Ruleset;
+use ratatui::{Frame, style::Stylize, text::Line, widgets::Widget};
 
 #[derive(Default)]
 struct CreateApp;
@@ -11,9 +12,22 @@ struct CreateApp;
 impl CreateApp {
     fn run(&mut self, terminal: &mut InlineTerminal) -> std::io::Result<()> {
         loop {
-            terminal
+            terminal.draw(|frame| self.draw(frame))?;
         }
         Ok(())
+    }
+
+    fn draw(&self, frame: &mut Frame) {
+        todo!()
+    }
+}
+
+impl Widget for &CreateApp {
+    fn render(self, area: ratatui::prelude::Rect, buf: &mut ratatui::prelude::Buffer)
+    where
+        Self: Sized,
+    {
+        let title = Line::from(" Create a New Ruleset ".bold());
     }
 }
 

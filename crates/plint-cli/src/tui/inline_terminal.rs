@@ -4,7 +4,7 @@ use ratatui::{
 };
 use std::io::Stdout;
 
-pub struct InlineTerminal(Terminal<CrosstermBackend<Stdout>>);
+pub(crate) struct InlineTerminal(Terminal<CrosstermBackend<Stdout>>);
 
 impl Default for InlineTerminal {
     fn default() -> Self {
