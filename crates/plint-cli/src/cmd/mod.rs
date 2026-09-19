@@ -18,12 +18,12 @@ pub(super) struct Cli {
 
 #[derive(Subcommand)]
 pub(super) enum Commands {
-    /// Lint the file(s) with the specified ruleset(s) and group(s).
+    /// Lint the files with the specified rulesets and groups.
     /// Leave the rulesets and groups empty to use the all available rulesets
     Lint {
-        /// Path(s) to the file(s) to lint
+        /// Paths to the files to lint
         files: Vec<PathBuf>,
-        /// Optional name(s) of the ruleset(s) and group(s) to use for linting.
+        /// Optional names of the rulesets and groups to use for linting.
         /// Leave this empty to use all available rulesets
         #[arg(short, long)]
         rulesets: Vec<String>,
@@ -38,13 +38,13 @@ pub(super) enum Commands {
         #[command(subcommand)]
         command: Option<GroupCommands>,
     },
-    /// Remove ruleset(s) or group(s) from the local storage.
-    /// Removing group(s) does not remove its rulesets
+    /// Remove rulesets or groups from the local storage.
+    /// Removing groups does not remove its rulesets
     Remove {
-        /// Name(s) of the ruleset(s) and group(s) to remove.
+        /// Names of the rulesets and groups to remove.
         /// Leave this empty to select rulesets and groups interactively
         rulesets: Vec<String>,
-        /// Whether to remove the ruleset(s) and group(s) forcibly without confirmation
+        /// Whether to remove the rulesets and groups forcibly without confirmation
         #[arg(short)]
         force: bool,
     },
@@ -52,9 +52,9 @@ pub(super) enum Commands {
 
 #[derive(Subcommand)]
 pub(super) enum RulesetCommands {
-    /// Check the validity of the ruleset(s)
+    /// Check the validity of the rulesets
     Check {
-        /// Name(s) of the ruleset(s) and group(s) to verify.
+        /// Names of the rulesets and groups to verify.
         /// Leave this empty to verify all available rulesets
         rulesets: Vec<String>,
     },
@@ -102,20 +102,30 @@ pub(super) enum GroupCommands {
         /// Name of the group to edit
         group: String,
     },
-    /// Add ruleset(s) to the group
+    /// Add rulesets to the group
     Add {
         /// Name of the group to add the ruleset to
         group: String,
-        /// Name(s) of the ruleset(s) to add to the group
+        /// Names of the rulesets to add to the group
         rulesets: Vec<String>,
     },
-    /// Remove ruleset(s) from the group
+    /// Remove rulesets from the group
     RemoveSet {
         /// Name of the group to add the ruleset to
         group: String,
-        /// Name(s) of the ruleset(s) to add to the group
+        /// Names of the rulesets to add to the group
         rulesets: Vec<String>,
     },
     /// List all installed or locally available groups
-    List,
+    List {
+        /// Show the rulesets in the group
+        #[arg(short, long)]
+        rulesets: bool,
+        /// Show the paths of the groups (and rulesets, if --rulesets is specified)
+        #[arg(short, long)]
+        paths: bool,
+        /// Show the paths of the groups (and rulesets, if --rulesets is specified) without hyperlinks
+        #[arg(long)]
+        paths_nolinks: bool,
+    },
 }

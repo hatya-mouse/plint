@@ -36,7 +36,11 @@ fn main() {
             Some(GroupCommands::Edit { group }) => {}
             Some(GroupCommands::Add { group, rulesets }) => {}
             Some(GroupCommands::RemoveSet { group, rulesets }) => {}
-            Some(GroupCommands::List) => {}
+            Some(GroupCommands::List {
+                rulesets,
+                paths,
+                paths_nolinks,
+            }) => {}
             None => (),
         },
         Some(Commands::Remove { rulesets, force }) => {}
