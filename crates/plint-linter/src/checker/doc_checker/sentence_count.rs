@@ -1,6 +1,6 @@
 use crate::{
     Document, LinterError,
-    checker::{CheckResult, Checker, CheckerInit},
+    checker::{CheckResult, CheckResultType, Checker, CheckerInit},
 };
 use unicode_segmentation::UnicodeSegmentation;
 
@@ -21,5 +21,9 @@ impl Checker for SentenceCountChecker {
                 .try_into()
                 .unwrap_or_default(),
         ))
+    }
+
+    fn check_type(&self) -> CheckResultType {
+        CheckResultType::Value
     }
 }

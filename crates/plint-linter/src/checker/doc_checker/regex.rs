@@ -1,6 +1,6 @@
 use crate::{
     Document, LinterError,
-    checker::{CheckResult, Checker, CheckerInit, Match},
+    checker::{CheckResult, CheckResultType, Checker, CheckerInit, Match},
 };
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -50,5 +50,9 @@ impl Checker for RegexChecker {
             .map(|m| Match { range: m.range() })
             .collect();
         CheckResult::Matches(matches)
+    }
+
+    fn check_type(&self) -> CheckResultType {
+        CheckResultType::Matches
     }
 }

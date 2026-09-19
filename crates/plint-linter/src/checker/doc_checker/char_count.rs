@@ -1,6 +1,6 @@
 use crate::{
     Document, LinterError,
-    checker::{CheckResult, Checker, CheckerInit},
+    checker::{CheckResult, CheckResultType, Checker, CheckerInit},
 };
 
 pub struct CharCountChecker;
@@ -16,5 +16,9 @@ impl Checker for CharCountChecker {
         CheckResult::Value(crate::Value::Integer(
             doc.content.chars().count().try_into().unwrap_or_default(),
         ))
+    }
+
+    fn check_type(&self) -> CheckResultType {
+        CheckResultType::Value
     }
 }

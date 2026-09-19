@@ -18,6 +18,11 @@ pub(crate) enum CheckResult {
     Value(crate::Value),
 }
 
+pub(crate) enum CheckResultType {
+    Matches,
+    Value,
+}
+
 pub(crate) trait CheckerInit: Sized {
     fn new(args: Option<&yaml_serde::Mapping>) -> Result<Self, LinterError>;
 }
@@ -25,6 +30,8 @@ pub(crate) trait CheckerInit: Sized {
 #[enum_dispatch]
 pub(crate) trait Checker {
     fn check(&self, doc: &Document) -> CheckResult;
+
+    fn check_type(&self) -> CheckResultType;
 }
 
 #[enum_dispatch(Checker)]

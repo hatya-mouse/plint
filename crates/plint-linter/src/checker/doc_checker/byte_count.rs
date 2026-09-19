@@ -1,6 +1,6 @@
 use crate::{
     Document, LinterError,
-    checker::{CheckResult, Checker, CheckerInit},
+    checker::{CheckResult, CheckResultType, Checker, CheckerInit},
 };
 
 pub struct ByteCountChecker;
@@ -16,5 +16,9 @@ impl Checker for ByteCountChecker {
         CheckResult::Value(crate::Value::Integer(
             doc.content.len().try_into().unwrap_or_default(),
         ))
+    }
+
+    fn check_type(&self) -> CheckResultType {
+        CheckResultType::Value
     }
 }

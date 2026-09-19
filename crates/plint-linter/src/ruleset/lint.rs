@@ -1,10 +1,39 @@
 use crate::{
     Document, LinterError, Match,
-    checker::{self, CheckResult, Checker},
+    checker::{self, CheckResult, CheckResultType, Checker},
     ruleset::{Rule, Ruleset},
 };
 
 impl Ruleset {
+    pub fn check_rules(&self) -> Vec<LintEntry> {
+        let mut results = Vec::new();
+
+        for rule in &self.rules {
+            let checker = match checker::checker_from(&rule.checker, rule.args.as_ref()) {
+                Ok(checker) => checker,
+                Err(linter_error) => {
+                    results.push(LintEntry {
+                        rule_name: rule.name.clone(),
+                        result: LintResult::LinterError(linter_error),
+                    });
+                    break;
+                }
+            };
+
+            // Get the result type of the checker and add error if the checker returns values but the rule has no condition
+            if rule.condition.is_none()
+                && let CheckResultType::Value = checker.check_type()
+            {
+                results.push(LintEntry {
+                    rule_name: rule.name.clone(),
+                    result: LintResult::LinterError(LinterError::MissingCondition),
+                });
+            }
+        }
+
+        results
+    }
+
     pub fn lint(&self, doc: &Document) -> Vec<LintEntry> {
         let mut results = Vec::new();
 
@@ -64,9 +93,7 @@ fn process_check_result(rule: &Rule, check_result: CheckResult) -> Vec<LintEntry
             } else {
                 results.push(LintEntry {
                     rule_name: rule.name.clone(),
-                    result: LintResult::MissingCondition {
-                        value: value.clone(),
-                    },
+                    result: LintResult::LinterError(LinterError::MissingCondition),
                 })
             }
         }
@@ -84,9 +111,6 @@ pub struct LintEntry {
 #[derive(Debug, Clone)]
 pub enum LintResult {
     LinterError(LinterError),
-    MissingCondition {
-        value: crate::Value,
-    },
     Info {
         message: String,
         match_data: Option<Match>,
