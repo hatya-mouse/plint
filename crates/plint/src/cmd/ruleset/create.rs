@@ -1,7 +1,4 @@
-use crate::{
-    storage::{IndexFile, RulesetIo},
-    utils::data_dir,
-};
+use crate::storage::{IndexFile, RulesetIo};
 use plint_linter::Ruleset;
 
 pub(crate) fn create(
