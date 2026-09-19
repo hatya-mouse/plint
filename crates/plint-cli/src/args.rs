@@ -56,26 +56,24 @@ pub(super) enum RulesetCommands {
     },
     /// Create a new ruleset
     Create {
-        /// Name of the ruleset to create.
-        /// Leave this empty to create a new ruleset interactively
-        #[arg(short, long)]
-        name: Option<String>,
-        /// Authors of the ruleset to create.
+        /// Name of the ruleset to create
+        name: String,
+        /// Authors of the ruleset to create
         #[arg(short, long)]
         authors: Option<String>,
-        /// Description of the ruleset to create.
+        /// Description of the ruleset to create
         #[arg(short, long)]
         description: Option<String>,
-        /// Version of the ruleset to create.
+        /// Version of the ruleset to create
         #[arg(short, long)]
         version: Option<u64>,
     },
     /// Edit an existing ruleset interactively
-    Edit {
-        /// Name of the ruleset to edit.
-        /// Leave this empty to select a ruleset interactively
-        ruleset: Option<String>,
-    },
+    // Edit {
+    //     /// Name of the ruleset to edit.
+    //     /// Leave this empty to select a ruleset interactively
+    //     ruleset: Option<String>,
+    // },
     /// List all installed or locally available rulesets
     List,
 }
