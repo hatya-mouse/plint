@@ -1,3 +1,4 @@
+use crate::Value;
 use nom::{
     IResult, Parser,
     branch::alt,
@@ -7,9 +8,12 @@ use nom::{
     sequence::{preceded, terminated},
 };
 
-fn number(input: &str) -> IResult<&str, &str> {
+fn literal(input: &str) -> IResult<&str, Value> {
+    alt((number, string)).parse(input)
+}
+
+fn number(input: &str) -> IResult<&str, Value> {
     alt((
-        recognize(decimal),
         recognize((
             char('.'),
             decimal,
@@ -23,10 +27,15 @@ fn number(input: &str) -> IResult<&str, &str> {
             decimal,
         )),
         recognize((decimal, char('.'), opt(decimal))),
+        recognize(decimal),
     ))
+    .map_res(|str| str.parse::<f64>())
+    .map(Value::Number)
     .parse(input)
 }
 
 fn decimal(input: &str) -> IResult<&str, &str> {
     recognize(many1(terminated(one_of("0123456789"), many0(char('_'))))).parse(input)
 }
+
+fn string(input: &str) -> IResult<&str, Value> {}
