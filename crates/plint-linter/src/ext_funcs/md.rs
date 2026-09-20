@@ -10,6 +10,10 @@ fn md_headings(args: &[Value]) -> Result<Value, String> {
     let (string, desired_level): (&str, Option<i64>) = match args {
         [Value::String(text)] => (text, None),
         [Value::String(text), Value::Integer(level)] => (text, Some(*level)),
+        [Value::String(text), Value::Match(m)] => match text.get(*m) {
+            Some(substring) => (substring, None),
+            None => return Ok(Value::Null),
+        },
         [Value::String(text), Value::Match(m), Value::Integer(level)] => match text.get(*m) {
             Some(substring) => (substring, Some(*level)),
             None => return Ok(Value::Null),

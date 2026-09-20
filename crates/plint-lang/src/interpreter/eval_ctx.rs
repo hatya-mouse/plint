@@ -18,9 +18,4 @@ impl EvalCtx {
     pub(super) fn get_var(&self, name: &str) -> Option<&Value> {
         self.variables.get(name)
     }
-
-    /// Returns whether the context has a variable with the given name.
-    pub(super) fn has_var(&self, name: &str) -> bool {
-        self.variables.contains_key(name)
-    }
 }

@@ -43,7 +43,7 @@ pub(crate) fn exprs(input: &str) -> IResult<&str, Vec<Expr>> {
 fn identifier(input: &str) -> IResult<&str, &str> {
     recognize(pair(
         alt((alpha1, tag("_"))),
-        many0_count(alt((alphanumeric1, tag("_")))),
+        many0_count(alt((alphanumeric1, tag("_"), tag(".")))),
     ))
     .parse(input)
 }
