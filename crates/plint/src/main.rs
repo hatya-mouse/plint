@@ -15,7 +15,6 @@ fn main() {
     match cli.command {
         Some(Commands::Lint { files, rulesets }) => cmd::lint::lint(&files, &rulesets),
         Some(Commands::Ruleset { command }) => match command {
-            RulesetCommands::Check { rulesets } => cmd::ruleset::check(&rulesets),
             RulesetCommands::Create {
                 name,
                 authors,

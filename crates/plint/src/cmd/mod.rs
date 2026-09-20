@@ -53,12 +53,6 @@ pub(super) enum Commands {
 
 #[derive(Subcommand)]
 pub(super) enum RulesetCommands {
-    /// Check the validity of the rulesets
-    Check {
-        /// Names of the rulesets and groups to verify.
-        /// Leave this empty to verify all available rulesets
-        rulesets: Vec<String>,
-    },
     /// Create a new ruleset
     Create {
         /// Name of the ruleset to create
