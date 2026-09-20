@@ -20,7 +20,7 @@ fn expr(input: &str) -> IResult<&str, Expr> {
     alt((for_loop, if_expr, literal, func_call, assign, variable)).parse(input)
 }
 
-fn exprs(input: &str) -> IResult<&str, Vec<Expr>> {
+pub(crate) fn exprs(input: &str) -> IResult<&str, Vec<Expr>> {
     many0(delimited(multispace0, expr, multispace0)).parse(input)
 }
 
@@ -41,7 +41,7 @@ fn for_loop(input: &str) -> IResult<&str, Expr> {
     let (input, loop_var) = delimited(space1, identifier, space1).parse(input)?;
     let (input, _) = tag("in").parse(input)?;
     let (input, iterable) = delimited(space1, expr, space0).parse(input)?;
-    let (input, body) = delimited(tag("{"), exprs, tag("}")).parse(input)?;
+    let (input, body) = delimited(tag("("), exprs, tag(")")).parse(input)?;
 
     let for_loop = Expr::For {
         loop_var: loop_var.to_string(),
@@ -63,7 +63,7 @@ fn if_expr(input: &str) -> IResult<&str, Expr> {
     .parse(input)?;
     let (input, else_body) = opt(preceded(
         delimited(multispace0, tag("else"), multispace0),
-        delimited(tag("{"), exprs, tag("}")),
+        delimited(tag("("), exprs, tag(")")),
     ))
     .parse(input)?;
     let else_body = else_body.unwrap_or_default();
@@ -80,7 +80,7 @@ fn if_expr(input: &str) -> IResult<&str, Expr> {
 fn if_arm(input: &str) -> IResult<&str, IfArm> {
     let (input, _) = tag("if").parse(input)?;
     let (input, condition) = delimited(space1, expr, multispace0).parse(input)?;
-    let (input, body) = delimited(tag("{"), exprs, tag("}")).parse(input)?;
+    let (input, body) = delimited(tag("("), exprs, tag(")")).parse(input)?;
 
     let if_arm = IfArm {
         condition: Box::new(condition),
