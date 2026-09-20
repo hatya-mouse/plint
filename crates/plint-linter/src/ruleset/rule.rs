@@ -5,9 +5,7 @@ use std::fmt::Display;
 pub struct Rule {
     pub name: String,
     pub message: String,
-    #[serde(default)]
     pub severity: Severity,
-    #[serde(default)]
     pub code: String,
 }
 

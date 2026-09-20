@@ -59,16 +59,12 @@ fn regex(args: &[Value]) -> Result<Value, String> {
 
     // Get the matches with regex
     let regex = regex::Regex::new(pattern).map_err(|err| err.to_string())?;
-    match regex.captures(string) {
-        Some(matches) => Ok(Value::List(
-            matches
-                .iter()
-                .filter_map(|m| m.map(|m| m.range()))
-                .map(|range| Value::Match(range.into()))
-                .collect(),
-        )),
-        None => Ok(Value::List(Vec::new())),
-    }
+    Ok(Value::List(
+        regex
+            .find_iter(string)
+            .map(|m| Value::Match(m.range().into()))
+            .collect(),
+    ))
 }
 
 fn text(args: &[Value]) -> Result<Value, String> {
