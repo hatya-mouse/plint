@@ -1,5 +1,6 @@
 mod eval_ctx;
 mod for_loop;
+mod func_call;
 mod if_expr;
 
 use crate::{Value, ast::Expr, interpreter::eval_ctx::EvalCtx, parser::exprs};
@@ -61,6 +62,7 @@ impl Interpreter {
     /// Evaluates a single expression and returns the result as a Value.
     fn eval_expr(&self, ctx: &mut EvalCtx, expr: &Expr) -> Result<Value, String> {
         match expr {
+            Expr::Parenthesized(exprs) => self.eval_exprs(ctx, exprs),
             Expr::For {
                 loop_var,
                 iterable,
@@ -70,9 +72,9 @@ impl Interpreter {
                 main,
                 else_ifs,
                 else_body,
-            } => self.eval_if_expr(ctx, main, else_ifs, else_body.as_ref())
-            Expr::Literal(value) => {}
-            Expr::FunctionCall { name, args } => {}
+            } => self.eval_if_expr(ctx, main, else_ifs, else_body.as_ref()),
+            Expr::Literal(value) => Ok(*value),
+            Expr::FunctionCall { name, args } => self.eval_func_call(ctx, name, args),
             Expr::Assign { name, value } => {}
             Expr::Variable { name } => {}
         }

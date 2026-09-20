@@ -1,6 +1,7 @@
 use std::{fmt::Display, range::Range};
 
 pub(super) enum Expr {
+    Parenthesized(Vec<Expr>),
     For {
         loop_var: String,
         iterable: Box<Expr>,

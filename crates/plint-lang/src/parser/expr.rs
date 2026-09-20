@@ -17,7 +17,16 @@ use nom::{
 fn expr(input: &str) -> IResult<&str, Expr> {
     // Place the variable parser at the end to avoid matching keywords,
     // function names and assign l-values as variables.
-    alt((for_loop, if_expr, literal, func_call, assign, variable)).parse(input)
+    alt((
+        parenthesized,
+        for_loop,
+        if_expr,
+        literal,
+        func_call,
+        assign,
+        variable,
+    ))
+    .parse(input)
 }
 
 pub(crate) fn exprs(input: &str) -> IResult<&str, Vec<Expr>> {
@@ -32,6 +41,14 @@ fn identifier(input: &str) -> IResult<&str, &str> {
         many0_count(alt((alphanumeric1, tag("_")))),
     ))
     .parse(input)
+}
+
+// --- PARENTHESIZED ---
+
+fn parenthesized(input: &str) -> IResult<&str, Expr> {
+    delimited(tag("("), exprs, tag(")"))
+        .map(Expr::Parenthesized)
+        .parse(input)
 }
 
 // --- FOR ---
