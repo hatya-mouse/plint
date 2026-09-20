@@ -31,6 +31,7 @@ pub(super) struct IfArm {
 }
 
 pub enum Value {
+    List(Vec<Value>),
     Match(Range<usize>),
     Number(f64),
     String(String),
