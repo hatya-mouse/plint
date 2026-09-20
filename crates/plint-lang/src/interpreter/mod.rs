@@ -1,13 +1,14 @@
 mod assign;
 mod eval_ctx;
+mod ext_func;
 mod for_loop;
 mod func_call;
 mod if_expr;
 
+pub use ext_func::ExtFunc;
+
 use crate::{Value, ast::Expr, interpreter::eval_ctx::EvalCtx, parser::exprs};
 use std::collections::HashMap;
-
-pub type ExtFunc = fn(Vec<Value>) -> Result<Value, String>;
 
 /// The `Interpreter` struct parses and evaluates the given code
 /// and returns the result of the last expression.
@@ -26,7 +27,7 @@ impl Interpreter {
         // First parse the code into expressions
         let (rest, parsed) = exprs(code).map_err(|err| err.to_string())?;
         // Return an error if there is any remaining unparsed code,
-        // which means that code contains unknown syntax that cannot be interpreted
+        // which means that code contains unknown syntax that could not be interpreted
         if !rest.is_empty() {
             return Err(format!("Unknown syntax: {}", rest));
         }

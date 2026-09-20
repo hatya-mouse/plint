@@ -20,6 +20,6 @@ impl Interpreter {
         }
 
         // Execute the function
-        func(evaluated_args)
+        func(&evaluated_args)
     }
 }
