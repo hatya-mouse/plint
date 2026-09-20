@@ -51,9 +51,11 @@ pub(crate) fn remove(rulesets: &[String], force: bool) {
     for target in targets {
         if !force {
             // If force is not specified, ask for confirmation
-            let confirmation =
-                inquire::Confirm::new(&format!("Are you sure you want to remove the {}?", target))
-                    .prompt();
+            let confirmation = inquire::Confirm::new(&format!(
+                "Are you sure you want to remove the {}? (y/n)",
+                target
+            ))
+            .prompt();
 
             match confirmation {
                 Ok(true) => (),
