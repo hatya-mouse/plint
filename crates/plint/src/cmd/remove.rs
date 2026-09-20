@@ -60,11 +60,11 @@ pub(crate) fn remove(rulesets: &[String], force: bool) {
             match confirmation {
                 Ok(true) => (),
                 Ok(false) => {
-                    println!("Skipping the {}", target);
+                    println!("  Skipping the {}", target);
                     continue;
                 }
                 Err(err) => {
-                    println!("Error during confirmation: {:#?}", err);
+                    println!("  Error during confirmation: {:#?}", err);
                     return;
                 }
             }
@@ -78,10 +78,10 @@ pub(crate) fn remove(rulesets: &[String], force: bool) {
 
         match remove_result {
             Ok(_) => {
-                println!("Removed the {}", target);
+                println!("  Removed the {}", target);
             }
             Err(err) => {
-                println!("Error removing {}: {:#?}", target, err);
+                println!("  Error removing {}: {:#?}", target, err);
             }
         }
     }
