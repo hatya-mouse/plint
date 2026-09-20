@@ -15,7 +15,7 @@ fn char_count(args: &[Value]) -> Result<Value, String> {
             Some(substring) => substring,
             None => return Ok(Value::Null),
         },
-        _ => return Ok(Value::Null),
+        _ => return Err("Invalid arguments for char_count function".to_string()),
     };
 
     Ok(Value::Integer(
@@ -34,7 +34,7 @@ fn byte_count(args: &[Value]) -> Result<Value, String> {
             Some(substring) => substring,
             None => return Ok(Value::Null),
         },
-        _ => return Ok(Value::Null),
+        _ => return Err("Invalid arguments for byte_count function".to_string()),
     };
 
     Ok(Value::Integer(string.len().try_into().unwrap_or_default()))
@@ -47,7 +47,7 @@ fn word_count(args: &[Value]) -> Result<Value, String> {
             Some(substring) => substring,
             None => return Ok(Value::Null),
         },
-        _ => return Ok(Value::Null),
+        _ => return Err("Invalid arguments for word_count function".to_string()),
     };
 
     Ok(Value::Integer(
@@ -66,7 +66,7 @@ fn line_count(args: &[Value]) -> Result<Value, String> {
             Some(substring) => substring,
             None => return Ok(Value::Null),
         },
-        _ => return Ok(Value::Null),
+        _ => return Err("Invalid arguments for line_count function".to_string()),
     };
 
     Ok(Value::Integer(
