@@ -31,7 +31,7 @@ pub(super) struct IfArm {
     pub(crate) body: Vec<Expr>,
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Eq)]
 pub enum Value {
     List(Vec<Value>),
     Match(Range<usize>),
