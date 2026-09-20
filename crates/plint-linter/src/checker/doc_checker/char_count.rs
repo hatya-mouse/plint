@@ -2,6 +2,7 @@ use crate::{
     Document, LinterError,
     checker::{CheckResult, CheckResultType, Checker, CheckerInit},
 };
+use unicode_segmentation::UnicodeSegmentation;
 
 pub struct CharCountChecker;
 
@@ -14,7 +15,11 @@ impl CheckerInit for CharCountChecker {
 impl Checker for CharCountChecker {
     fn check(&self, doc: &Document) -> CheckResult {
         CheckResult::Value(crate::Value::Integer(
-            doc.content.chars().count().try_into().unwrap_or_default(),
+            doc.content
+                .graphemes(true)
+                .count()
+                .try_into()
+                .unwrap_or_default(),
         ))
     }
 

@@ -3,10 +3,13 @@ mod variants;
 
 pub(crate) use variants::checker_from;
 
-use crate::checker::doc_checker::{
-    sentence_count::SentenceCountChecker, word_count::WordCountChecker,
+use crate::{
+    Document, LinterError, Match,
+    checker::doc_checker::{
+        regex_count::RegexCountChecker, sentence_count::SentenceCountChecker,
+        word_count::WordCountChecker,
+    },
 };
-use crate::{Document, LinterError, Match};
 use doc_checker::{
     byte_count::ByteCountChecker, char_count::CharCountChecker, line_count::LineCountChecker,
     regex::RegexChecker,
@@ -40,6 +43,7 @@ pub(crate) enum CheckerEnum {
     DocCharCount(CharCountChecker),
     DocLineCount(LineCountChecker),
     DocRegex(RegexChecker),
+    DocRegexCount(RegexCountChecker),
     DocSentenceCount(SentenceCountChecker),
     DocWordCount(WordCountChecker),
 }
@@ -49,6 +53,7 @@ pub const ALL_CHECKERS: &[&str] = &[
     "doc.char-count",
     "doc.line-count",
     "doc.regex",
+    "doc.regex-count",
     "doc.sentence-count",
     "doc.word-count",
 ];
