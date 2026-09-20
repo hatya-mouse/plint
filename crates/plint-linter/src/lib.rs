@@ -2,7 +2,6 @@ pub mod checker;
 pub mod condition;
 pub mod document;
 pub mod error;
-pub mod lang;
 pub mod ruleset;
 pub mod value;
 

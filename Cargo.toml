@@ -3,6 +3,7 @@ resolver = "3"
 members = [
     "crates/plint",
     "crates/plint-linter",
+    "crates/plint-lang",
 ]
 
 [workspace.dependencies]
