@@ -97,13 +97,11 @@ impl Interpreter {
     }
 
     fn set_var(&self, ctx: &mut EvalCtx, name: &str, value: Value) -> Result<(), String> {
-        if ctx.has_var(name) {
-            ctx.set_var(name.to_string(), value);
-            Ok(())
-        } else if self.ext_consts.contains_key(name) {
+        if self.ext_consts.contains_key(name) {
             Err(format!("Cannot assign to constant {}", name))
         } else {
-            Err(format!("Variable {} not found", name))
+            ctx.set_var(name.to_string(), value);
+            Ok(())
         }
     }
 }
