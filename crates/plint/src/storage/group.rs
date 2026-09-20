@@ -66,7 +66,7 @@ impl Group {
     }
 
     /// Removes the group with the name.
-    fn remove(name: &str) -> Result<(), PlintIoError> {
+    pub(crate) fn remove(name: &str) -> Result<(), PlintIoError> {
         let mut index_file = IndexFile::load()?;
 
         // Remove the ruleset entry from the index file

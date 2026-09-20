@@ -1,5 +1,6 @@
 pub(super) mod group;
 pub(super) mod lint;
+pub(super) mod remove;
 pub(super) mod ruleset;
 
 use clap::{Parser, Subcommand};

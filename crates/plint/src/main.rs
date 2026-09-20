@@ -38,7 +38,7 @@ fn main() {
                 path_nolink,
             } => cmd::group::list(rulesets, path, path_nolink),
         },
-        Some(Commands::Remove { rulesets, force }) => {}
+        Some(Commands::Remove { rulesets, force }) => cmd::remove::remove(&rulesets, force),
         None => (),
     };
 }
