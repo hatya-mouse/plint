@@ -14,6 +14,7 @@ use std::collections::HashMap;
 /// and returns the result of the last expression.
 ///
 /// You can add functions and constants to the interpreter by using the `add_func` and `add_const` methods.
+#[derive(Default)]
 pub struct Interpreter {
     /// Externally defined functions.
     ext_funcs: HashMap<String, ExtFunc>,

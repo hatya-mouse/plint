@@ -10,4 +10,6 @@ pub enum LinterError {
     UnknownChecker(String),
     /// The rule lacks a condition, but a checker returns a value that requires a condition to evaluate.
     MissingCondition,
+    /// An error happends when executing the code.
+    CodeError(String),
 }

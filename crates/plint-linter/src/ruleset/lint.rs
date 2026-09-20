@@ -1,102 +1,84 @@
+use std::range::Range;
+
 use crate::{
-    Document, LinterError, Match,
-    checker::{self, CheckResult, CheckResultType, Checker},
+    Document, LinterError,
     ruleset::{Rule, Ruleset},
 };
+use plint_lang::{Interpreter, Value};
 
 impl Ruleset {
-    pub fn check_rules(&self) -> Vec<LintEntry> {
-        let mut results = Vec::new();
-
-        for rule in &self.rules {
-            let checker = match checker::checker_from(&rule.checker, rule.args.as_ref()) {
-                Ok(checker) => checker,
-                Err(linter_error) => {
-                    results.push(LintEntry {
-                        rule_name: rule.name.clone(),
-                        result: LintResult::LinterError(linter_error),
-                    });
-                    break;
-                }
-            };
-
-            // Get the result type of the checker and add error if the checker returns values but the rule has no condition
-            if rule.condition.is_none()
-                && let CheckResultType::Value = checker.check_type()
-            {
-                results.push(LintEntry {
-                    rule_name: rule.name.clone(),
-                    result: LintResult::LinterError(LinterError::MissingCondition),
-                });
-            }
-        }
-
-        results
-    }
-
     pub fn lint(&self, doc: &Document) -> Vec<LintEntry> {
         let mut results = Vec::new();
 
         for rule in &self.rules {
-            let checker = checker::checker_from(&rule.checker, rule.args.as_ref());
+            // Create an interpreter
+            let mut interpreter = Interpreter::default();
 
-            match checker {
-                Ok(checker) => {
-                    let check_result = checker.check(doc);
-                    let processed_results = process_check_result(rule, check_result);
-                    results.extend(processed_results);
-                }
-                Err(linter_error) => {
+            // Add the document content as file name as constants
+            interpreter.add_const("file_name", Value::String(doc.file_name.clone()));
+            interpreter.add_const("doc", Value::String(doc.content.clone()));
+
+            // Run the code and get the result
+            let result = interpreter.run(&rule.code);
+
+            let result_value = match result {
+                Ok(value) => value,
+                Err(code_error) => {
                     results.push(LintEntry {
                         rule_name: rule.name.clone(),
-                        result: LintResult::LinterError(linter_error),
+                        result: LintResult::LinterError(LinterError::CodeError(code_error)),
                     });
+                    continue;
                 }
-            }
+            };
+
+            // Process the result and add the lint entries
+            let processed_results = process_code_result(rule, result_value);
+            results.extend(processed_results);
         }
 
         results
     }
 }
 
-fn process_check_result(rule: &Rule, check_result: CheckResult) -> Vec<LintEntry> {
-    let mut results;
+fn process_code_result(rule: &Rule, value: Value) -> Vec<LintEntry> {
+    let mut results = Vec::new();
 
-    match check_result {
-        CheckResult::Matches(matches) => {
-            results = Vec::with_capacity(matches.len());
-            for m in matches {
+    match value {
+        Value::Bool(boolean) => {
+            if boolean {
                 results.push(LintEntry {
                     rule_name: rule.name.clone(),
                     result: LintResult::Info {
                         message: rule.message.clone(),
-                        match_data: Some(m),
+                        match_data: None,
                     },
                 });
             }
         }
-        CheckResult::Value(value) => {
-            results = Vec::new();
-
-            if let Some(condition) = rule.condition.as_ref() {
-                let eval_result = condition.evaluate(&value);
-
-                if eval_result {
+        Value::List(matches) => {
+            for item in matches {
+                if let Value::Match(m) = item {
                     results.push(LintEntry {
                         rule_name: rule.name.clone(),
                         result: LintResult::Info {
                             message: rule.message.clone(),
-                            match_data: None,
+                            match_data: Some(m),
                         },
                     });
                 }
-            } else {
-                results.push(LintEntry {
-                    rule_name: rule.name.clone(),
-                    result: LintResult::LinterError(LinterError::MissingCondition),
-                })
             }
         }
+        Value::Match(m) => {
+            results.push(LintEntry {
+                rule_name: rule.name.clone(),
+                result: LintResult::Info {
+                    message: rule.message.clone(),
+                    match_data: Some(m),
+                },
+            });
+        }
+        _ => (),
     }
 
     results
@@ -113,6 +95,6 @@ pub enum LintResult {
     LinterError(LinterError),
     Info {
         message: String,
-        match_data: Option<Match>,
+        match_data: Option<Range<usize>>,
     },
 }

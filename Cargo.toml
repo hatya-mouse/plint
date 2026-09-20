@@ -8,3 +8,4 @@ members = [
 
 [workspace.dependencies]
 plint-linter = { path = "crates/plint-linter" }
+plint-lang = { path = "crates/plint-lang" }

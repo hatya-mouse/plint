@@ -1,7 +1,5 @@
-use std::fmt::Display;
-
-use crate::Condition;
 use serde::{Deserialize, Serialize};
+use std::fmt::Display;
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Rule {
@@ -9,11 +7,8 @@ pub struct Rule {
     pub message: String,
     #[serde(default)]
     pub severity: Severity,
-    pub checker: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub args: Option<yaml_serde::Mapping>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub condition: Option<Condition>,
+    #[serde(default)]
+    pub code: String,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
