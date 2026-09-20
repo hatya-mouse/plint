@@ -13,7 +13,7 @@ fn char_count(args: &[Value]) -> Result<Value, String> {
         [Value::String(text)] => text,
         [Value::String(text), Value::Match(m)] => match text.get(*m) {
             Some(substring) => substring,
-            None => return Ok(Value::Integer(0)),
+            None => return Ok(Value::Null),
         },
         _ => return Ok(Value::Null),
     };
@@ -32,7 +32,7 @@ fn byte_count(args: &[Value]) -> Result<Value, String> {
         [Value::String(text)] => text,
         [Value::String(text), Value::Match(m)] => match text.get(*m) {
             Some(substring) => substring,
-            None => return Ok(Value::Integer(0)),
+            None => return Ok(Value::Null),
         },
         _ => return Ok(Value::Null),
     };
@@ -45,7 +45,7 @@ fn word_count(args: &[Value]) -> Result<Value, String> {
         [Value::String(text)] => text,
         [Value::String(text), Value::Match(m)] => match text.get(*m) {
             Some(substring) => substring,
-            None => return Ok(Value::Integer(0)),
+            None => return Ok(Value::Null),
         },
         _ => return Ok(Value::Null),
     };
@@ -64,7 +64,7 @@ fn line_count(args: &[Value]) -> Result<Value, String> {
         [Value::String(text)] => text,
         [Value::String(text), Value::Match(m)] => match text.get(*m) {
             Some(substring) => substring,
-            None => return Ok(Value::Integer(0)),
+            None => return Ok(Value::Null),
         },
         _ => return Ok(Value::Null),
     };
