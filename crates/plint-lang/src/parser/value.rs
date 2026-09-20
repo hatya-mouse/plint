@@ -2,8 +2,8 @@ use crate::{Value, ast::Expr};
 use nom::{
     IResult, Parser,
     branch::alt,
-    bytes::{streaming::escaped_transform, tag},
-    character::streaming::{char, none_of, one_of},
+    bytes::complete::{escaped_transform, tag},
+    character::complete::{char, none_of, one_of},
     combinator::{opt, recognize, value},
     multi::{many0, many1},
     sequence::{delimited, terminated},

@@ -1,5 +1,6 @@
 use std::{fmt::Display, range::Range};
 
+#[derive(Debug)]
 pub(super) enum Expr {
     Parenthesized(Vec<Expr>),
     For {
@@ -26,12 +27,13 @@ pub(super) enum Expr {
     },
 }
 
+#[derive(Debug)]
 pub(super) struct IfArm {
     pub(crate) condition: Box<Expr>,
     pub(crate) body: Vec<Expr>,
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Value {
     List(Vec<Value>),
     Match(Range<usize>),
