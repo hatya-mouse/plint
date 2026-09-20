@@ -16,6 +16,10 @@ pub(super) enum Expr {
         name: String,
         args: Vec<Expr>,
     },
+    Assign {
+        name: String,
+        value: Box<Expr>,
+    },
     Variable {
         name: String,
     },

@@ -7,18 +7,34 @@ use nom::{
     branch::alt,
     bytes::tag,
     character::streaming::{alpha1, alphanumeric1, multispace0, space0, space1},
-    combinator::recognize,
+    combinator::{opt, recognize},
     multi::{many0, many0_count, separated_list0},
-    sequence::{delimited, pair, terminated},
+    sequence::{delimited, pair, preceded, terminated},
 };
 
+// --- EXPRESSION ---
+
 fn expr(input: &str) -> IResult<&str, Expr> {
-    alt((for_loop, if_expr, literal, func_call, variable)).parse(input)
+    // Place the variable parser at the end to avoid matching keywords,
+    // function names and assign l-values as variables.
+    alt((for_loop, if_expr, literal, func_call, assign, variable)).parse(input)
 }
 
 fn exprs(input: &str) -> IResult<&str, Vec<Expr>> {
     many0(delimited(multispace0, expr, multispace0)).parse(input)
 }
+
+// --- IDENTIFIER ---
+
+fn identifier(input: &str) -> IResult<&str, &str> {
+    recognize(pair(
+        alt((alpha1, tag("_"))),
+        many0_count(alt((alphanumeric1, tag("_")))),
+    ))
+    .parse(input)
+}
+
+// --- FOR ---
 
 fn for_loop(input: &str) -> IResult<&str, Expr> {
     let (input, _) = tag("for").parse(input)?;
@@ -36,17 +52,45 @@ fn for_loop(input: &str) -> IResult<&str, Expr> {
     Ok((input, for_loop))
 }
 
-fn if_expr(input: &str) -> IResult<&str, Expr> {}
+// --- IF ---
 
-fn if_arm(input: &str) -> IResult<&str, IfArm> {}
-
-fn identifier(input: &str) -> IResult<&str, &str> {
-    recognize(pair(
-        alt((alpha1, tag("_"))),
-        many0_count(alt((alphanumeric1, tag("_")))),
+fn if_expr(input: &str) -> IResult<&str, Expr> {
+    let (input, main) = if_arm.parse(input)?;
+    let (input, else_ifs) = many0(preceded(
+        delimited(multispace0, tag("else"), multispace0),
+        if_arm,
     ))
-    .parse(input)
+    .parse(input)?;
+    let (input, else_body) = opt(preceded(
+        delimited(multispace0, tag("else"), multispace0),
+        delimited(tag("{"), exprs, tag("}")),
+    ))
+    .parse(input)?;
+    let else_body = else_body.unwrap_or_default();
+
+    let if_expr = Expr::If {
+        main,
+        else_ifs,
+        else_body,
+    };
+
+    Ok((input, if_expr))
 }
+
+fn if_arm(input: &str) -> IResult<&str, IfArm> {
+    let (input, _) = tag("if").parse(input)?;
+    let (input, condition) = delimited(space1, expr, multispace0).parse(input)?;
+    let (input, body) = delimited(tag("{"), exprs, tag("}")).parse(input)?;
+
+    let if_arm = IfArm {
+        condition: Box::new(condition),
+        body,
+    };
+
+    Ok((input, if_arm))
+}
+
+// --- FUNCTION CALL ---
 
 fn func_call(input: &str) -> IResult<&str, Expr> {
     let (input, name) = identifier.parse(input)?;
@@ -67,6 +111,23 @@ fn func_call(input: &str) -> IResult<&str, Expr> {
 
     Ok((input, func_call))
 }
+
+// --- ASSIGN ---
+
+fn assign(input: &str) -> IResult<&str, Expr> {
+    let (input, name) = identifier.parse(input)?;
+    let (input, _) = delimited(space0, tag("="), space0).parse(input)?;
+    let (input, value) = expr.parse(input)?;
+
+    let assign = Expr::Assign {
+        name: name.to_string(),
+        value: Box::new(value),
+    };
+
+    Ok((input, assign))
+}
+
+// --- VARIABLE ---
 
 fn variable(input: &str) -> IResult<&str, Expr> {
     identifier
