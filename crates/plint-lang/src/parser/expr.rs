@@ -137,7 +137,7 @@ fn assign(input: &str) -> IResult<&str, Expr> {
 
     let assign = Expr::Assign {
         name: name.to_string(),
-        value: Box::new(value),
+        expr: Box::new(value),
     };
 
     Ok((input, assign))

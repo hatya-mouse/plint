@@ -19,7 +19,7 @@ pub(super) enum Expr {
     },
     Assign {
         name: String,
-        value: Box<Expr>,
+        expr: Box<Expr>,
     },
     Variable {
         name: String,
@@ -31,6 +31,7 @@ pub(super) struct IfArm {
     pub(crate) body: Vec<Expr>,
 }
 
+#[derive(Clone)]
 pub enum Value {
     List(Vec<Value>),
     Match(Range<usize>),

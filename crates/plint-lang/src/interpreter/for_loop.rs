@@ -23,7 +23,7 @@ impl Interpreter {
         let mut results = Vec::new();
         for item in collection {
             // Set the loop variable in the context
-            ctx.set_variable(loop_var.to_string(), item);
+            self.set_var(ctx, loop_var, item)?;
 
             // Evaluate the body of the loop
             let value = self.eval_exprs(ctx, body)?;

@@ -1,3 +1,4 @@
+mod assign;
 mod eval_ctx;
 mod for_loop;
 mod func_call;
@@ -73,10 +74,34 @@ impl Interpreter {
                 else_ifs,
                 else_body,
             } => self.eval_if_expr(ctx, main, else_ifs, else_body.as_ref()),
-            Expr::Literal(value) => Ok(*value),
+            Expr::Literal(value) => Ok(value.clone()),
             Expr::FunctionCall { name, args } => self.eval_func_call(ctx, name, args),
-            Expr::Assign { name, value } => {}
-            Expr::Variable { name } => {}
+            Expr::Assign { name, expr } => self.eval_assign(ctx, name, expr),
+            Expr::Variable { name } => self.get_var(ctx, name),
+        }
+    }
+
+    // --- VARIABLE MANAGEMENT ---
+
+    fn get_var(&self, ctx: &EvalCtx, name: &str) -> Result<Value, String> {
+        match ctx.get_var(name) {
+            Some(value) => Ok(value.clone()),
+            None => self
+                .ext_consts
+                .get(name)
+                .cloned()
+                .ok_or_else(|| format!("Variable {} not found", name)),
+        }
+    }
+
+    fn set_var(&self, ctx: &mut EvalCtx, name: &str, value: Value) -> Result<(), String> {
+        if ctx.has_var(name) {
+            ctx.set_var(name.to_string(), value);
+            Ok(())
+        } else if self.ext_consts.contains_key(name) {
+            Err(format!("Cannot assign to constant {}", name))
+        } else {
+            Err(format!("Variable {} not found", name))
         }
     }
 }
