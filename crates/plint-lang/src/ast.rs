@@ -1,24 +1,33 @@
-pub(super) enum Expression {
-    FunctionCall {
-        name: String,
-        args: Vec<Expression>,
-    },
-    Variable {
-        name: String,
-    },
+use std::range::Range;
+
+pub(super) enum Expr {
     For {
-        variable: String,
-        iterable: Box<Expression>,
-        body: Vec<Expression>,
+        loop_var: String,
+        iterable: Box<Expr>,
+        body: Vec<Expr>,
     },
     If {
         main: IfArm,
         else_ifs: Vec<IfArm>,
-        else_body: Vec<Expression>,
+        else_body: Vec<Expr>,
+    },
+    Literal(Value),
+    FunctionCall {
+        name: String,
+        args: Vec<Expr>,
+    },
+    Variable {
+        name: String,
     },
 }
 
 pub(super) struct IfArm {
-    pub(crate) condition: Box<Expression>,
-    pub(crate) body: Vec<Expression>,
+    pub(crate) condition: Box<Expr>,
+    pub(crate) body: Vec<Expr>,
+}
+
+pub enum Value {
+    Match(Range<usize>),
+    Number(f64),
+    String(String),
 }

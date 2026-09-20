@@ -1,4 +1,4 @@
-use crate::Value;
+use crate::{Value, ast::Expr};
 use nom::{
     IResult, Parser,
     branch::alt,
@@ -9,8 +9,8 @@ use nom::{
     sequence::{delimited, preceded, terminated},
 };
 
-fn literal(input: &str) -> IResult<&str, Value> {
-    alt((number, string)).parse(input)
+pub(super) fn literal(input: &str) -> IResult<&str, Expr> {
+    alt((number, string)).map(Expr::Literal).parse(input)
 }
 
 fn number(input: &str) -> IResult<&str, Value> {
