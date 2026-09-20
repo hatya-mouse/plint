@@ -3,12 +3,6 @@ use crate::{
     checker::{CheckResult, CheckResultType, Checker, CheckerInit, Match},
 };
 use regex::Regex;
-use serde::{Deserialize, Serialize};
-
-#[derive(Serialize, Deserialize)]
-struct RegexArgs {
-    pub pattern: String,
-}
 
 pub struct RegexChecker {
     regex: Regex,
@@ -20,20 +14,18 @@ impl CheckerInit for RegexChecker {
             return Err(LinterError::MissingArgs);
         };
 
-        let parsed_args = RegexArgs {
-            pattern: args
-                .get("pattern")
-                .ok_or_else(|| LinterError::MissingArg {
-                    arg: "pattern".to_string(),
-                })?
-                .as_str()
-                .ok_or_else(|| LinterError::InvalidArg {
-                    arg: "pattern".to_string(),
-                    reason: None,
-                })?
-                .into(),
-        };
-        let regex = Regex::new(&parsed_args.pattern).map_err(|e| LinterError::InvalidArg {
+        let pattern: String = args
+            .get("pattern")
+            .ok_or_else(|| LinterError::MissingArg {
+                arg: "pattern".to_string(),
+            })?
+            .as_str()
+            .ok_or_else(|| LinterError::InvalidArg {
+                arg: "pattern".to_string(),
+                reason: None,
+            })?
+            .into();
+        let regex = Regex::new(&pattern).map_err(|e| LinterError::InvalidArg {
             arg: "pattern".to_string(),
             reason: Some(format!("Invalid regex pattern: {}", e)),
         })?;

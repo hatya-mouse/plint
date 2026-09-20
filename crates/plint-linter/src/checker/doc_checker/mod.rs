@@ -1,5 +1,6 @@
 pub mod byte_count;
 pub mod char_count;
+pub mod contains;
 pub mod line_count;
 pub mod regex;
 pub mod regex_count;
@@ -8,12 +9,14 @@ pub mod word_count;
 
 use crate::{
     LinterError,
-    checker::{CheckerEnum, CheckerInit, doc_checker::regex_count::RegexCountChecker},
+    checker::{CheckerEnum, CheckerInit},
 };
 use byte_count::ByteCountChecker;
 use char_count::CharCountChecker;
+use contains::ContainsChecker;
 use line_count::LineCountChecker;
 use regex::RegexChecker;
+use regex_count::RegexCountChecker;
 use sentence_count::SentenceCountChecker;
 use word_count::WordCountChecker;
 
@@ -24,6 +27,7 @@ pub(super) fn new_std_checker(
     match check {
         "doc.byte-count" => Ok(CheckerEnum::DocByteCount(ByteCountChecker::new(args)?)),
         "doc.char-count" => Ok(CheckerEnum::DocCharCount(CharCountChecker::new(args)?)),
+        "doc.contains" => Ok(CheckerEnum::DocContains(ContainsChecker::new(args)?)),
         "doc.line-count" => Ok(CheckerEnum::DocLineCount(LineCountChecker::new(args)?)),
         "doc.regex" => Ok(CheckerEnum::DocRegex(RegexChecker::new(args)?)),
         "doc.regex-count" => Ok(CheckerEnum::DocRegexCount(RegexCountChecker::new(args)?)),

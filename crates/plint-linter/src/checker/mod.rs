@@ -6,13 +6,10 @@ pub(crate) use variants::checker_from;
 use crate::{
     Document, LinterError, Match,
     checker::doc_checker::{
-        regex_count::RegexCountChecker, sentence_count::SentenceCountChecker,
-        word_count::WordCountChecker,
+        byte_count::ByteCountChecker, char_count::CharCountChecker, contains::ContainsChecker,
+        line_count::LineCountChecker, regex::RegexChecker, regex_count::RegexCountChecker,
+        sentence_count::SentenceCountChecker, word_count::WordCountChecker,
     },
-};
-use doc_checker::{
-    byte_count::ByteCountChecker, char_count::CharCountChecker, line_count::LineCountChecker,
-    regex::RegexChecker,
 };
 use enum_dispatch::enum_dispatch;
 
@@ -41,6 +38,7 @@ pub(crate) trait Checker {
 pub(crate) enum CheckerEnum {
     DocByteCount(ByteCountChecker),
     DocCharCount(CharCountChecker),
+    DocContains(ContainsChecker),
     DocLineCount(LineCountChecker),
     DocRegex(RegexChecker),
     DocRegexCount(RegexCountChecker),
@@ -51,6 +49,7 @@ pub(crate) enum CheckerEnum {
 pub const ALL_CHECKERS: &[&str] = &[
     "doc.byte-count",
     "doc.char-count",
+    "doc.contains",
     "doc.line-count",
     "doc.regex",
     "doc.regex-count",
