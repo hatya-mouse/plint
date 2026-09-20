@@ -1,0 +1,75 @@
+use plint_lang::{Interpreter, Value};
+use unicode_segmentation::UnicodeSegmentation;
+
+pub(super) fn add_funcs(interpreter: &mut Interpreter) {
+    interpreter.add_func("char_count", Box::new(char_count));
+    interpreter.add_func("byte_count", Box::new(byte_count));
+    interpreter.add_func("word_count", Box::new(word_count));
+    interpreter.add_func("line_count", Box::new(line_count));
+}
+
+fn char_count(args: &[Value]) -> Result<Value, String> {
+    let string = match args {
+        [Value::String(text)] => text,
+        [Value::String(text), Value::Match(m)] => match text.get(*m) {
+            Some(substring) => substring,
+            None => return Ok(Value::Integer(0)),
+        },
+        _ => return Ok(Value::Null),
+    };
+
+    Ok(Value::Integer(
+        string
+            .graphemes(true)
+            .count()
+            .try_into()
+            .unwrap_or_default(),
+    ))
+}
+
+fn byte_count(args: &[Value]) -> Result<Value, String> {
+    let string = match args {
+        [Value::String(text)] => text,
+        [Value::String(text), Value::Match(m)] => match text.get(*m) {
+            Some(substring) => substring,
+            None => return Ok(Value::Integer(0)),
+        },
+        _ => return Ok(Value::Null),
+    };
+
+    Ok(Value::Integer(string.len().try_into().unwrap_or_default()))
+}
+
+fn word_count(args: &[Value]) -> Result<Value, String> {
+    let string = match args {
+        [Value::String(text)] => text,
+        [Value::String(text), Value::Match(m)] => match text.get(*m) {
+            Some(substring) => substring,
+            None => return Ok(Value::Integer(0)),
+        },
+        _ => return Ok(Value::Null),
+    };
+
+    Ok(Value::Integer(
+        string
+            .unicode_words()
+            .count()
+            .try_into()
+            .unwrap_or_default(),
+    ))
+}
+
+fn line_count(args: &[Value]) -> Result<Value, String> {
+    let string = match args {
+        [Value::String(text)] => text,
+        [Value::String(text), Value::Match(m)] => match text.get(*m) {
+            Some(substring) => substring,
+            None => return Ok(Value::Integer(0)),
+        },
+        _ => return Ok(Value::Null),
+    };
+
+    Ok(Value::Integer(
+        string.lines().count().try_into().unwrap_or_default(),
+    ))
+}

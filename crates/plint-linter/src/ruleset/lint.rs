@@ -1,10 +1,10 @@
-use std::range::Range;
-
 use crate::{
     Document, LinterError,
+    ext_funcs::add_ext_funcs,
     ruleset::{Rule, Ruleset},
 };
 use plint_lang::{Interpreter, Value};
+use std::range::Range;
 
 impl Ruleset {
     pub fn lint(&self, doc: &Document) -> Vec<LintEntry> {
@@ -13,6 +13,9 @@ impl Ruleset {
         for rule in &self.rules {
             // Create an interpreter
             let mut interpreter = Interpreter::default();
+
+            // Add external functions
+            add_ext_funcs(&mut interpreter);
 
             // Add the document content as file name as constants
             interpreter.add_const("file_name", Value::String(doc.file_name.clone()));
