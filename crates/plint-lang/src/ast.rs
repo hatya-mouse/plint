@@ -1,4 +1,4 @@
-use std::range::Range;
+use std::{fmt::Display, range::Range};
 
 pub(super) enum Expr {
     For {
@@ -9,7 +9,7 @@ pub(super) enum Expr {
     If {
         main: IfArm,
         else_ifs: Vec<IfArm>,
-        else_body: Vec<Expr>,
+        else_body: Option<Vec<Expr>>,
     },
     Literal(Value),
     FunctionCall {
@@ -33,10 +33,30 @@ pub(super) struct IfArm {
 pub enum Value {
     List(Vec<Value>),
     Match(Range<usize>),
-    Number(f64),
+    Integer(i64),
     String(String),
     Bool(bool),
     Null,
+}
+
+impl Display for Value {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Value::List(list) => write!(
+                f,
+                "[{}]",
+                list.iter()
+                    .map(|v| v.to_string())
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            ),
+            Value::Match(range) => write!(f, "Match({:?})", range),
+            Value::Integer(integer) => write!(f, "{}", integer),
+            Value::String(string) => write!(f, "\"{}\"", string),
+            Value::Bool(boolean) => write!(f, "{}", boolean),
+            Value::Null => write!(f, "null"),
+        }
+    }
 }
 
 impl Value {

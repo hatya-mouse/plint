@@ -66,7 +66,6 @@ fn if_expr(input: &str) -> IResult<&str, Expr> {
         delimited(tag("("), exprs, tag(")")),
     ))
     .parse(input)?;
-    let else_body = else_body.unwrap_or_default();
 
     let if_expr = Expr::If {
         main,

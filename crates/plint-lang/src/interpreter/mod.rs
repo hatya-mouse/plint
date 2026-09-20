@@ -1,5 +1,6 @@
 mod eval_ctx;
 mod for_loop;
+mod if_expr;
 
 use crate::{Value, ast::Expr, interpreter::eval_ctx::EvalCtx, parser::exprs};
 use std::collections::HashMap;
@@ -69,7 +70,7 @@ impl Interpreter {
                 main,
                 else_ifs,
                 else_body,
-            } => {}
+            } => self.eval_if_expr(ctx, main, else_ifs, else_body.as_ref())
             Expr::Literal(value) => {}
             Expr::FunctionCall { name, args } => {}
             Expr::Assign { name, value } => {}
