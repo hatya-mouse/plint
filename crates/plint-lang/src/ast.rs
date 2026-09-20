@@ -38,3 +38,15 @@ pub enum Value {
     Bool(bool),
     Null,
 }
+
+impl Value {
+    #[inline]
+    pub fn is_null(&self) -> bool {
+        matches!(self, Value::Null)
+    }
+
+    #[inline]
+    pub fn is_some(&self) -> bool {
+        !self.is_null()
+    }
+}
