@@ -2,10 +2,11 @@ use crate::Value;
 use nom::{
     IResult, Parser,
     branch::alt,
-    character::streaming::{char, one_of},
-    combinator::{opt, recognize},
+    bytes::streaming::escaped_transform,
+    character::streaming::{char, none_of, one_of},
+    combinator::{opt, recognize, value},
     multi::{many0, many1},
-    sequence::{preceded, terminated},
+    sequence::{delimited, preceded, terminated},
 };
 
 fn literal(input: &str) -> IResult<&str, Value> {
@@ -38,4 +39,20 @@ fn decimal(input: &str) -> IResult<&str, &str> {
     recognize(many1(terminated(one_of("0123456789"), many0(char('_'))))).parse(input)
 }
 
-fn string(input: &str) -> IResult<&str, Value> {}
+fn string(input: &str) -> IResult<&str, Value> {
+    delimited(
+        char('"'),
+        escaped_transform(
+            none_of("\\\""),
+            '\\',
+            alt((
+                value('\\', char('\\')),
+                value('"', char('"')),
+                value('\n', char('n')),
+            )),
+        ),
+        char('"'),
+    )
+    .map(Value::String)
+    .parse(input)
+}
