@@ -34,7 +34,7 @@ Without `--rulesets` argument, all the installed rulesets will be used for linti
 
 I designed my original linting language to express complex rules as short as possible.
 
-```swift
+```
 for sentence in sentences(doc) (
     length = char_count(doc, sentence)
     words = word_count(doc, sentence)
