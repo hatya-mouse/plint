@@ -2,6 +2,17 @@
 
 `plint` is a linter for text files. You can define your own rules using the custom language designed for linting.
 
+The result of the linter looks like the following:
+
+```
+text.txt
+  154:378  advisory  This sentence is too long.
+  178:182  warning   Avoid using "very" when possible.
+  379:505  advisory  This sentence is too long.
+  506:510  error     TODO comments are not allowed.
+  579:840  advisory  This sentence is too long.
+```
+
 ## Features
 
 - Lint text files in your terminal
