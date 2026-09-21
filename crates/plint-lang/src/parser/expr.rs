@@ -8,7 +8,7 @@ use nom::{
     bytes::complete::tag,
     character::complete::{alpha1, alphanumeric1, line_ending, multispace0, space0, space1},
     combinator::{opt, recognize},
-    multi::{many0, many0_count, separated_list0, separated_list1},
+    multi::{many0, many0_count, separated_list0},
     sequence::{delimited, pair, preceded, terminated},
 };
 
@@ -31,11 +31,18 @@ fn expr(input: &str) -> IResult<&str, Expr> {
 
 pub(crate) fn exprs(input: &str) -> IResult<&str, Vec<Expr>> {
     delimited(
-        multispace0,
-        separated_list1((space0, line_ending, multispace0), expr),
-        multispace0,
+        semi_multispace0,
+        separated_list0(
+            (space0, alt((line_ending, tag(";"))), semi_multispace0),
+            expr,
+        ),
+        semi_multispace0,
     )
     .parse(input)
+}
+
+fn semi_multispace0(input: &str) -> IResult<&str, ()> {
+    many0(alt((line_ending, tag(";")))).map(|_| ()).parse(input)
 }
 
 // --- IDENTIFIER ---

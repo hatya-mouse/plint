@@ -10,8 +10,8 @@ impl Interpreter {
         // Evaluate the rhs expression
         let value = self.eval_expr(ctx, expr)?;
         // Assign the evaluated value to the variable
-        self.set_var(ctx, name, value)?;
+        self.set_var(ctx, name, value.clone())?;
 
-        Ok(Value::Null)
+        Ok(value)
     }
 }
