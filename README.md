@@ -55,7 +55,7 @@ for sentence in sentences(doc) (
 )
 ```
 
-In this language, all statements are expressions that return values. Variables can have value of any type.
+In this language, all statements are expressions that return values. Variables can have values of any type.
 
 ## Rulesets
 
@@ -73,7 +73,7 @@ Then, run the following command to open the YAML ruleset file in your default ed
 plint ruleset edit [NAME]
 ```
 
-You can remove the both groups and the rulesets using the following command:
+You can remove both groups and rulesets using the following command:
 
 ```bash
 plint remove [TARGET]...
