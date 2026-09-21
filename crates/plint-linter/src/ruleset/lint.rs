@@ -52,7 +52,7 @@ fn process_code_result(rule: &Rule, value: Value) -> Vec<LintEntry> {
             if boolean {
                 results.push(LintEntry {
                     rule_name: rule.name.clone(),
-                    result: LintResult::Info {
+                    result: LintResult::Diagnostic {
                         message: rule.message.clone(),
                         severity: rule.severity.clone(),
                         match_data: None,
@@ -65,7 +65,7 @@ fn process_code_result(rule: &Rule, value: Value) -> Vec<LintEntry> {
                 if let Value::Match(m) = item {
                     results.push(LintEntry {
                         rule_name: rule.name.clone(),
-                        result: LintResult::Info {
+                        result: LintResult::Diagnostic {
                             message: rule.message.clone(),
                             severity: rule.severity.clone(),
                             match_data: Some(m),
@@ -77,7 +77,7 @@ fn process_code_result(rule: &Rule, value: Value) -> Vec<LintEntry> {
         Value::Match(m) => {
             results.push(LintEntry {
                 rule_name: rule.name.clone(),
-                result: LintResult::Info {
+                result: LintResult::Diagnostic {
                     message: rule.message.clone(),
                     severity: rule.severity.clone(),
                     match_data: Some(m),
@@ -99,7 +99,7 @@ pub struct LintEntry {
 #[derive(Debug, Clone)]
 pub enum LintResult {
     LinterError(LinterError),
-    Info {
+    Diagnostic {
         message: String,
         severity: Severity,
         match_data: Option<Range<usize>>,
