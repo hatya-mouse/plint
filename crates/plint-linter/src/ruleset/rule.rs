@@ -9,17 +9,17 @@ pub struct Rule {
     pub code: String,
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Severity {
-    #[serde(rename = "error")]
-    Error,
-    #[serde(rename = "warning")]
-    Warning,
-    #[serde(rename = "advisory")]
-    Advisory,
     #[serde(rename = "info")]
     #[default]
     Info,
+    #[serde(rename = "advisory")]
+    Advisory,
+    #[serde(rename = "warning")]
+    Warning,
+    #[serde(rename = "error")]
+    Error,
 }
 
 impl Severity {

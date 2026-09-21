@@ -4,8 +4,9 @@ use std::{cmp::Ordering, path::PathBuf};
 
 pub(crate) fn lint(files: &[PathBuf], rulesets: &[String], verbose: bool) {
     let parsed_rulesets = get_rulesets_and_groups(rulesets);
+    let mut iter = files.iter().peekable();
 
-    for file in files {
+    while let Some(file) = iter.next() {
         let doc = match plint_linter::Document::from_file(file) {
             Ok(doc) => doc,
             Err(err) => {
@@ -27,11 +28,15 @@ pub(crate) fn lint(files: &[PathBuf], rulesets: &[String], verbose: bool) {
         }
 
         entries.sort_by(sort_entries);
-        print_result(&doc, &entries);
+        print_result(&doc, &entries, verbose);
+
+        if iter.peek().is_some() {
+            println!();
+        }
     }
 
     if !verbose {
-        println!("Use --verbose to show more detailed result");
+        println!("\nUse --verbose to show more detailed result");
     }
 }
 
