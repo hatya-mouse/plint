@@ -13,8 +13,8 @@
 You can lint the text files using the following command:
 
 ```bash
-plint lint [FILES]...
-plint lint [FILES]... --rulesets [RULESETS]...
+plint lint [FILE]...
+plint lint [FILE]... --rulesets [RULESET]...
 ```
 
 Without `--rulesets` argument, all the installed rulesets will be used for linting.
@@ -74,4 +74,15 @@ plint remove [TARGET]...
 
 `plint` supports grouping multiple rulesets into a single group to organize your rulesets and use them easily in `lint` command.
 
-<!--You can create groups using the following command:-->
+You can create groups using the following command:
+
+```bash
+plint group create [NAME]
+```
+
+To add or remove rulesets to/from the group, run the following command:
+
+```bash
+plint group add-set [NAME] --rulesets [RULESET]...
+plint group remove-set [NAME] --rulesets [RULESET]...
+```
