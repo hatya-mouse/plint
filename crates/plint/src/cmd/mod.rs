@@ -28,6 +28,9 @@ pub(super) enum Commands {
         /// Leave this empty to use all available rulesets
         #[arg(short, long)]
         rulesets: Vec<String>,
+        /// Show the more detailed lint result
+        #[arg(long, default_value_t)]
+        verbose: bool,
     },
     /// Manage rulesets
     Ruleset {

@@ -1,4 +1,5 @@
-use plint_linter::{Document, LintEntry, LintResult};
+use owo_colors::OwoColorize;
+use plint_linter::{Document, LintEntry, LintResult, ruleset::Severity};
 use unicode_width::UnicodeWidthStr;
 
 pub(crate) fn print_result(doc: &Document, entries: &[LintEntry]) {
@@ -13,7 +14,7 @@ pub(crate) fn print_result(doc: &Document, entries: &[LintEntry]) {
         match &entry.result {
             LintResult::LinterError(error) => {
                 left_texts.push("ERROR".to_string());
-                middle_texts.push(entry.rule_name.clone());
+                middle_texts.push(to_single_line(&entry.rule_name));
                 right_texts.push(format!("{}", error));
             }
             LintResult::Diagnostic {
@@ -23,12 +24,12 @@ pub(crate) fn print_result(doc: &Document, entries: &[LintEntry]) {
             } => {
                 if let Some(match_data) = match_data {
                     left_texts.push(format!("{}:{}", match_data.start, match_data.end));
-                    middle_texts.push(format!("{}", severity));
-                    right_texts.push(message.clone());
+                    middle_texts.push(format_severity_colored(severity));
+                    right_texts.push(to_single_line(message));
                 } else {
                     left_texts.push("".to_string());
-                    middle_texts.push(format!("{}", severity));
-                    right_texts.push(message.clone());
+                    middle_texts.push(format_severity_colored(severity));
+                    right_texts.push(to_single_line(message));
                 }
             }
         }
@@ -52,4 +53,25 @@ pub(crate) fn print_result(doc: &Document, entries: &[LintEntry]) {
             left, middle, right
         );
     }
+}
+
+fn format_severity_colored(severity: &Severity) -> String {
+    match severity {
+        Severity::Error => {
+            format!("{}", "error".bold().red())
+        }
+        Severity::Warning => {
+            format!("{}", "warning".bold().yellow())
+        }
+        Severity::Advisory => {
+            format!("{}", "advisory".bold().purple())
+        }
+        Severity::Info => {
+            format!("{}", "info".bold())
+        }
+    }
+}
+
+fn to_single_line(message: &str) -> String {
+    message.replace("\n", " ")
 }

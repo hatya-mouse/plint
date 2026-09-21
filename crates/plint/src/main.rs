@@ -14,7 +14,11 @@ fn main() {
     let cli = cmd::Cli::parse();
 
     match cli.command {
-        Some(Commands::Lint { files, rulesets }) => cmd::lint::lint(&files, &rulesets),
+        Some(Commands::Lint {
+            files,
+            rulesets,
+            verbose,
+        }) => cmd::lint::lint(&files, &rulesets, verbose),
         Some(Commands::Ruleset { command }) => match command {
             RulesetCommands::Create {
                 name,

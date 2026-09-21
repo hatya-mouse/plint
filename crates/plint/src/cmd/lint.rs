@@ -1,8 +1,8 @@
-use crate::{PlintIoError, storage::get_rulesets_and_groups, tui::print_result};
-use plint_linter::{Document, Ruleset};
-use std::path::PathBuf;
+use crate::{storage::get_rulesets_and_groups, tui::print_result};
+use plint_linter::{LintEntry, LintResult};
+use std::{cmp::Ordering, path::PathBuf};
 
-pub(crate) fn lint(files: &[PathBuf], rulesets: &[String]) {
+pub(crate) fn lint(files: &[PathBuf], rulesets: &[String], verbose: bool) {
     let parsed_rulesets = get_rulesets_and_groups(rulesets);
 
     for file in files {
@@ -14,20 +14,49 @@ pub(crate) fn lint(files: &[PathBuf], rulesets: &[String]) {
             }
         };
 
+        let mut entries = Vec::new();
         for result in &parsed_rulesets {
-            process_ruleset(&doc, result);
+            match result {
+                Ok(ruleset) => {
+                    entries.extend(ruleset.lint(&doc));
+                }
+                Err(err) => {
+                    println!("Lint error: {:?}", err);
+                }
+            }
         }
+
+        entries.sort_by(sort_entries);
+        print_result(&doc, &entries);
+    }
+
+    if !verbose {
+        println!("Use --verbose to show more detailed result");
     }
 }
 
-fn process_ruleset(doc: &Document, result: &Result<Ruleset, PlintIoError>) {
-    match result {
-        Ok(ruleset) => {
-            let entries = ruleset.lint(doc);
-            print_result(doc, &entries);
-        }
-        Err(err) => {
-            println!("{:#?}", err);
-        }
+fn sort_entries(a: &LintEntry, b: &LintEntry) -> Ordering {
+    match (&a.result, &b.result) {
+        (LintResult::LinterError(_), LintResult::Diagnostic { .. }) => Ordering::Less,
+        (LintResult::Diagnostic { .. }, LintResult::LinterError(_)) => Ordering::Greater,
+        (
+            LintResult::Diagnostic {
+                match_data: a_match,
+                ..
+            },
+            LintResult::Diagnostic {
+                match_data: b_match,
+                ..
+            },
+        ) => match (a_match, b_match) {
+            (None, None) => Ordering::Equal,
+            (None, Some(_)) => Ordering::Greater,
+            (Some(_), None) => Ordering::Less,
+            (Some(a_match), Some(b_match)) => match a_match.start.cmp(&b_match.start) {
+                Ordering::Equal => a_match.end.cmp(&b_match.end),
+                m => m,
+            },
+        },
+        (LintResult::LinterError(_), LintResult::LinterError(_)) => Ordering::Equal,
     }
 }
