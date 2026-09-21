@@ -9,7 +9,7 @@ use nom::{
     character::complete::{alpha1, alphanumeric1, multispace0, space0, space1},
     combinator::{opt, recognize},
     multi::{many0, many0_count, separated_list0},
-    sequence::{delimited, pair, preceded, terminated},
+    sequence::{delimited, pair, preceded},
 };
 
 // --- EXPRESSION ---
@@ -127,7 +127,8 @@ fn func_call(input: &str) -> IResult<&str, Expr> {
     let (input, name) = identifier.parse(input)?;
     let (input, args) = delimited(
         tag("("),
-        terminated(
+        delimited(
+            multispace0,
             separated_list0(delimited(multispace0, tag(","), multispace0), expr),
             (multispace0, opt((tag(","), multispace0))),
         ),

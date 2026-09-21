@@ -2,7 +2,7 @@
 
 A command line tool should be simple to use, easy to understand, and predictable even when something goes wrong. Good error messages are very important because users need to understand what happened without reading the source code, and a well-designed command line interface can make a very complicated program feel surprisingly simple.
 
-The first version of this tool was written very quickly, and the implementation is still changing as new requirements appear.
+The first version of this tool was perhaps written very quickly, and the implementation is still changing as new requirements appear.
 
 TODO: add proper configuration file validation before the next release.
 
