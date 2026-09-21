@@ -1,0 +1,15 @@
+# 実験結果 nostrud dolor incididunt elit nisi ea eiusmod ut irure eiusmod nulla aliquip et officia dolor laboris mollit laborum laboris et ullamco cillum consectetur ea reprehenderit adipisicing culpa dolor laborum sunt
+
+この実験では、入力データに対して複数の条件を適用し、その結果を比較した。最初の結果は予想よりも安定していた。
+
+しかし今回の結果については、単純に成功したと判断することはできない。実験環境にはいくつかの問題があり、特に入力データの偏りが結果に大きな影響を与えている可能性があるため、追加の検証が必要である。また、この結果だけを根拠として手法全体の有効性を判断するのは適切ではない。
+
+TODO: この部分を後で修正する。
+
+短い文章です。
+
+この文章は特に問題ありませんが、比較のために十分な長さを持たせています。
+
+しかしこの文章は「結果」という言葉を含んでおり、なおかつ八十文字を超えるように意図的に長く書かれています。したがって現在のルールでは、この文章が検出対象になるはずです。
+
+この実験については現時点では十分な検証ができていないと思います。

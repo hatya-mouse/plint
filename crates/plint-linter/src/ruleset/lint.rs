@@ -1,7 +1,7 @@
 use crate::{
     Document, LinterError,
     ext_funcs::add_ext_funcs,
-    ruleset::{Rule, Ruleset},
+    ruleset::{Rule, Ruleset, Severity},
 };
 use plint_lang::{Interpreter, Value};
 use std::range::Range;
@@ -54,6 +54,7 @@ fn process_code_result(rule: &Rule, value: Value) -> Vec<LintEntry> {
                     rule_name: rule.name.clone(),
                     result: LintResult::Info {
                         message: rule.message.clone(),
+                        severity: rule.severity.clone(),
                         match_data: None,
                     },
                 });
@@ -66,6 +67,7 @@ fn process_code_result(rule: &Rule, value: Value) -> Vec<LintEntry> {
                         rule_name: rule.name.clone(),
                         result: LintResult::Info {
                             message: rule.message.clone(),
+                            severity: rule.severity.clone(),
                             match_data: Some(m),
                         },
                     });
@@ -77,6 +79,7 @@ fn process_code_result(rule: &Rule, value: Value) -> Vec<LintEntry> {
                 rule_name: rule.name.clone(),
                 result: LintResult::Info {
                     message: rule.message.clone(),
+                    severity: rule.severity.clone(),
                     match_data: Some(m),
                 },
             });
@@ -98,6 +101,7 @@ pub enum LintResult {
     LinterError(LinterError),
     Info {
         message: String,
+        severity: Severity,
         match_data: Option<Range<usize>>,
     },
 }

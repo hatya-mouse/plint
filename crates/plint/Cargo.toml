@@ -10,5 +10,6 @@ inquire = "0.9.4"
 open = "5.4.4"
 plint-linter = { workspace = true }
 serde = "1.0.229"
+unicode-width = "0.2.2"
 url = "2.5.8"
 yaml_serde = "0.10.7"

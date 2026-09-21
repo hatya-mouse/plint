@@ -9,7 +9,7 @@ pub struct Rule {
     pub code: String,
 }
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub enum Severity {
     #[serde(rename = "error")]
     Error,
@@ -36,10 +36,10 @@ impl Severity {
 impl Display for Severity {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::Error => write!(f, "Error"),
-            Self::Warning => write!(f, "Warning"),
-            Self::Advisory => write!(f, "Advisory"),
-            Self::Info => write!(f, "Info"),
+            Self::Error => write!(f, "error"),
+            Self::Warning => write!(f, "warning"),
+            Self::Advisory => write!(f, "advisory"),
+            Self::Info => write!(f, "info"),
         }
     }
 }

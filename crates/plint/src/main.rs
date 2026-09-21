@@ -1,6 +1,7 @@
 mod cmd;
 mod consts;
 mod storage;
+mod tui;
 mod utils;
 
 use crate::{

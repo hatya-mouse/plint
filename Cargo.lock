@@ -729,6 +729,7 @@ dependencies = [
  "open",
  "plint-linter",
  "serde",
+ "unicode-width",
  "url",
  "yaml_serde",
 ]
