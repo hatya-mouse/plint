@@ -5,8 +5,8 @@ use crate::{
 use nom::{
     IResult, Parser,
     branch::alt,
-    bytes::complete::tag,
-    character::complete::{alpha1, alphanumeric1, line_ending, multispace0, space0, space1},
+    bytes::complete::{tag, take_while1},
+    character::complete::{alpha1, alphanumeric1, multispace0, space0, space1},
     combinator::{opt, recognize},
     multi::{many0, many0_count, separated_list0},
     sequence::{delimited, pair, preceded, terminated},
@@ -31,18 +31,21 @@ fn expr(input: &str) -> IResult<&str, Expr> {
 
 pub(crate) fn exprs(input: &str) -> IResult<&str, Vec<Expr>> {
     delimited(
-        semi_multispace0,
-        separated_list0(
-            (space0, alt((line_ending, tag(";"))), semi_multispace0),
-            expr,
-        ),
-        semi_multispace0,
+        expr_separator0,
+        separated_list0(expr_separator0, expr),
+        expr_separator0,
     )
     .parse(input)
 }
 
-fn semi_multispace0(input: &str) -> IResult<&str, ()> {
-    many0(alt((line_ending, tag(";")))).map(|_| ()).parse(input)
+fn expr_separator1(input: &str) -> IResult<&str, ()> {
+    take_while1(|c: char| c.is_whitespace() || c == ';')
+        .map(|_| ())
+        .parse(input)
+}
+
+fn expr_separator0(input: &str) -> IResult<&str, ()> {
+    opt(expr_separator1).map(|_| ()).parse(input)
 }
 
 // --- IDENTIFIER ---
