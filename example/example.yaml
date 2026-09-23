@@ -11,19 +11,8 @@ rules:
   severity: warning
   code: |
     for heading in md.headings(doc) (
-        if gt(word_count(heading), 15) (
+        if gt(word_count(doc, heading), 15) (
             heading
-        )
-    )
-
-- name: long-sentence
-  message: The sentence is considered too long.
-  severity: warning
-    for paragraph in paragraphs(doc) (
-        for sentence in sentences(doc, paragraph) (
-            if gt(word_count(sentence), 30) (
-                sentence
-            )
         )
     )
 
@@ -42,4 +31,22 @@ rules:
         if has_hedging (
             sentence
         )
+    )
+
+- name: heading-level-skipped
+  message: Heading level is skipped.
+  severity: error
+  code: |
+    last_heading_level = 0
+    for heading in md.headings(doc) (
+        heading_level = len(regex(doc, heading, "#"))
+        heading_diff = sub(heading_level, last_heading_level)
+
+        return = if gt(heading_diff, 1) (
+            heading
+        )
+
+        last_heading_level = heading_level
+
+        return
     )
