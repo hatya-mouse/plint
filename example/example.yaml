@@ -1,0 +1,45 @@
+name: example
+authors: hacha-mouse
+description: An example ruleset for markdown files.
+version: 1
+creation_time: 2026-09-23T16:08:38.085939Z
+modified_time: 2026-09-23T16:08:38.086074Z
+
+rules:
+- name: heading-too-long
+  message: The heading is considered too long.
+  severity: warning
+  code: |
+    for heading in md.headings(doc) (
+        if gt(word_count(heading), 15) (
+            heading
+        )
+    )
+
+- name: long-sentence
+  message: The sentence is considered too long.
+  severity: warning
+    for paragraph in paragraphs(doc) (
+        for sentence in sentences(doc, paragraph) (
+            if gt(word_count(sentence), 30) (
+                sentence
+            )
+        )
+    )
+
+- name: hedging
+  message: The sentence seems to contain a hedging expression.
+  severity: error
+  code: |
+    for sentence in sentences(doc) (
+        has_hedging = or(
+            contains(doc, sentence, "I think"),
+            contains(doc, sentence, "I believe"),
+            contains(doc, sentence, "perhaps"),
+            contains(doc, sentence, "probably")
+        )
+
+        if has_hedging (
+            sentence
+        )
+    )
