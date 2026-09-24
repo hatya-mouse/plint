@@ -3,7 +3,7 @@
 `plint` is a linter for text files.
 It finds errors and warnings defined in your rulesets using a custom language designed for linting.
 
-[Demo GIF Animation](https://raw.githubusercontent.com/hatya-mouse/plint/main/assets/demo.gif)
+![Demo GIF Animation](https://raw.githubusercontent.com/hatya-mouse/plint/main/assets/demo.gif)
 
 # Quickstart
 
