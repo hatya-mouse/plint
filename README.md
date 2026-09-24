@@ -3,6 +3,8 @@
 `plint` is a linter for text files.
 It finds errors and warnings defined in your rulesets using a custom language designed for linting.
 
+[Demo GIF Animation](https://raw.githubusercontent.com/hatya-mouse/plint/main/assets/demo.gif)
+
 # Quickstart
 
 If you have `cargo` installed, run the following command to install the latest version of `plint`:
