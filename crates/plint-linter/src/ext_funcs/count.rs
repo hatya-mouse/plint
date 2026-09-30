@@ -1,3 +1,19 @@
+//
+//  Copyright 2026 Shuntaro Kasatani
+//
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+//
+
 use plint_lang::{Interpreter, Value};
 use unicode_segmentation::UnicodeSegmentation;
 
@@ -20,7 +36,7 @@ fn len(args: &[Value]) -> Result<Value, String> {
 fn char_count(args: &[Value]) -> Result<Value, String> {
     let string = match args {
         [Value::String(text)] => text,
-        [Value::String(text), Value::Match(m)] => match text.get(*m) {
+        [Value::String(text), Value::Match(m)] => match text.get(m.clone()) {
             Some(substring) => substring,
             None => return Ok(Value::Null),
         },
@@ -39,7 +55,7 @@ fn char_count(args: &[Value]) -> Result<Value, String> {
 fn byte_count(args: &[Value]) -> Result<Value, String> {
     let string = match args {
         [Value::String(text)] => text,
-        [Value::String(text), Value::Match(m)] => match text.get(*m) {
+        [Value::String(text), Value::Match(m)] => match text.get(m.clone()) {
             Some(substring) => substring,
             None => return Ok(Value::Null),
         },
@@ -52,7 +68,7 @@ fn byte_count(args: &[Value]) -> Result<Value, String> {
 fn word_count(args: &[Value]) -> Result<Value, String> {
     let string = match args {
         [Value::String(text)] => text,
-        [Value::String(text), Value::Match(m)] => match text.get(*m) {
+        [Value::String(text), Value::Match(m)] => match text.get(m.clone()) {
             Some(substring) => substring,
             None => return Ok(Value::Null),
         },
@@ -71,7 +87,7 @@ fn word_count(args: &[Value]) -> Result<Value, String> {
 fn line_count(args: &[Value]) -> Result<Value, String> {
     let string = match args {
         [Value::String(text)] => text,
-        [Value::String(text), Value::Match(m)] => match text.get(*m) {
+        [Value::String(text), Value::Match(m)] => match text.get(m.clone()) {
             Some(substring) => substring,
             None => return Ok(Value::Null),
         },

@@ -1,3 +1,19 @@
+//
+//  Copyright 2026 Shuntaro Kasatani
+//
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+//
+
 use plint_lang::{Interpreter, Value};
 use pulldown_cmark::{Event, HeadingLevel, Parser, Tag, TagEnd};
 
@@ -10,14 +26,16 @@ fn md_headings(args: &[Value]) -> Result<Value, String> {
     let (string, desired_level): (&str, Option<i64>) = match args {
         [Value::String(text)] => (text, None),
         [Value::String(text), Value::Integer(level)] => (text, Some(*level)),
-        [Value::String(text), Value::Match(m)] => match text.get(*m) {
+        [Value::String(text), Value::Match(m)] => match text.get(m.clone()) {
             Some(substring) => (substring, None),
             None => return Ok(Value::Null),
         },
-        [Value::String(text), Value::Match(m), Value::Integer(level)] => match text.get(*m) {
-            Some(substring) => (substring, Some(*level)),
-            None => return Ok(Value::Null),
-        },
+        [Value::String(text), Value::Match(m), Value::Integer(level)] => {
+            match text.get(m.clone()) {
+                Some(substring) => (substring, Some(*level)),
+                None => return Ok(Value::Null),
+            }
+        }
         _ => return Err("Invalid arguments for md.headings function".to_string()),
     };
 
@@ -51,7 +69,7 @@ fn md_headings(args: &[Value]) -> Result<Value, String> {
                     continue;
                 };
 
-                matches.push(Value::Match((heading_start..range.end).into()));
+                matches.push(Value::Match(heading_start..range.end));
             }
             _ => (),
         }
@@ -63,7 +81,7 @@ fn md_headings(args: &[Value]) -> Result<Value, String> {
 fn md_paragraphs(args: &[Value]) -> Result<Value, String> {
     let string: &str = match args {
         [Value::String(text)] => text,
-        [Value::String(text), Value::Match(m)] => match text.get(*m) {
+        [Value::String(text), Value::Match(m)] => match text.get(m.clone()) {
             Some(substring) => substring,
             None => return Ok(Value::Null),
         },
@@ -81,7 +99,7 @@ fn md_paragraphs(args: &[Value]) -> Result<Value, String> {
             }
             Event::End(TagEnd::Paragraph) => {
                 if let Some(para_start) = para_start.take() {
-                    matches.push(Value::Match((para_start..range.end).into()));
+                    matches.push(Value::Match(para_start..range.end));
                 }
             }
             _ => (),
