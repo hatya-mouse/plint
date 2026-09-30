@@ -749,12 +749,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "plint-lang"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dbad67113d0804d284fb8ecf780d0c6f5d14252408e043f18d701c17e0337a72"
+dependencies = [
+ "nom",
+]
+
+[[package]]
 name = "plint-linter"
 version = "0.1.0"
 dependencies = [
  "chrono",
  "enum_dispatch",
- "plint-lang",
+ "plint-lang 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "pulldown-cmark",
  "regex",
  "serde",
