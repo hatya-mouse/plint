@@ -1,5 +1,8 @@
 [package]
 name = "plint-linter"
+description = "The core feature of the linter for plint"
+repository = "https://github.com/hatya-mouse/plint"
+license = "Apache-2.0"
 version = "0.1.0"
 edition = "2024"
 
