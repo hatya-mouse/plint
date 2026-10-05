@@ -14,7 +14,9 @@
 //  limitations under the License.
 //
 
+mod error;
 mod lint_entry;
 mod preview;
 
+pub(super) use error::show_error;
 pub(super) use lint_entry::print_result;
