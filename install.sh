@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-VERSION=$(curl -s https://api.github.com/repos/Hatya-mouse/plint/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
+VERSION=$(curl -s https://api.github.com/repos/hatya-mouse/plint/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
 
 ARCH=$(uname -m)
 OS=$(uname -s)
@@ -19,6 +19,6 @@ else
     exit 1
 fi
 
-curl -L "https://github.com/Hatya-mouse/plint/releases/download/${VERSION}/plint-${TARGET}.tar.gz" | tar -xz
+curl -L "https://github.com/hatya-mouse/plint/releases/download/${VERSION}/plint-${TARGET}.tar.gz" | tar -xz
 sudo mv plint /usr/local/bin/
 echo "✓ Installed plint ${VERSION}"
