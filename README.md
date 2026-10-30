@@ -6,6 +6,8 @@
     </picture>
 </div>
 
+---
+
 `plint` is a linter for text files.
 It finds errors and warnings defined in the rulesets. Rulesets are written in a custom language designed for linting.
 
