@@ -19,6 +19,7 @@ rules: []
 ```
 
 A rule has `name`, `message`, `severity` and `code` fields.
+`message` is a message that is shown when the code returns matches.
 `severity` can only be either `info`, `advisory`, `warning` and `error`.
 
 An actual rule definition may look like below:
