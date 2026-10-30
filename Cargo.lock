@@ -727,25 +727,18 @@ checksum = "a89322df9ebe1c1578d689c92318e070967d1042b512afbe49518723f4e6d5cd"
 
 [[package]]
 name = "plint"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "clap",
  "dirs",
  "inquire",
  "open",
  "owo-colors",
- "plint-linter 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "plint-linter 0.1.1",
  "serde",
  "unicode-width",
  "url",
  "yaml_serde",
-]
-
-[[package]]
-name = "plint-lang"
-version = "0.1.1"
-dependencies = [
- "nom",
 ]
 
 [[package]]
@@ -758,17 +751,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "plint-linter"
-version = "0.1.1"
+name = "plint-lang"
+version = "0.1.2"
 dependencies = [
- "chrono",
- "enum_dispatch",
- "plint-lang 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "pulldown-cmark",
- "regex",
- "serde",
- "unicode-segmentation",
- "yaml_serde",
+ "nom",
 ]
 
 [[package]]
@@ -779,7 +765,21 @@ checksum = "c7774768f995299063b320e700e0b7e6339a8947dac88d4f4c19788cc7db5ddc"
 dependencies = [
  "chrono",
  "enum_dispatch",
- "plint-lang 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "plint-lang 0.1.1",
+ "pulldown-cmark",
+ "regex",
+ "serde",
+ "unicode-segmentation",
+ "yaml_serde",
+]
+
+[[package]]
+name = "plint-linter"
+version = "0.1.2"
+dependencies = [
+ "chrono",
+ "enum_dispatch",
+ "plint-lang 0.1.1",
  "pulldown-cmark",
  "regex",
  "serde",
