@@ -5,7 +5,41 @@ It finds errors and warnings defined in the rulesets. Rulesets are written in a 
 
 [![asciicast](https://asciinema.org/a/y3XBjoE6GxdLROBG.svg)](https://asciinema.org/a/y3XBjoE6GxdLROBG)
 
-# Quickstart
+## Ruleset
+
+A ruleset is defined in YAML file like below. It has some metadata and the actual list of rules.
+
+```yaml
+name: ruleset
+authors: hatya-mouse
+description: An example ruleset
+version: 1
+creation_time: 2026-10-31T00:56:38.015284Z
+rules: []
+```
+
+A rule has `name`, `message`, `severity` and `code` fields.
+`severity` can only be either `info`, `advisory`, `warning` and `error`.
+
+An actual rule definition may look like below:
+
+```yaml
+- name: todo
+  message: The file contains TODO.
+  severity: error
+  code: |
+    for word in words(doc) (
+        if contains(doc, word, "TODO") (
+            word
+        )
+    )
+```
+
+The condition of the rule is defined using a custom language.
+
+Detailed explanation of the language is available [here](./language.md).
+
+## Quickstart
 
 If you **have `cargo` installed**, run the following command to install the latest version of `plint`:
 
@@ -22,13 +56,13 @@ curl -fsSL https://raw.githubusercontent.com/hatya-mouse/plint/main/install.sh |
 If you **use neither Linux nor maxOS** and **don't have `cargo` installed**,
 download the compiled binary from [Releases](https://github.com/hatya-mouse/plint/releases/).
 
-# Features
+## Features
 
 - Find errors & warnings in your text files
 - Support for Markdown files
 - Define rules in a custom linting language
 
-# Credits
+## Credits
 
 Here are some of the crates I used for plint:
 

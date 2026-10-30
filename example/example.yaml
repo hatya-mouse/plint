@@ -3,7 +3,6 @@ authors: hacha-mouse
 description: An example ruleset for markdown files.
 version: 1
 creation_time: 2026-09-23T16:08:38.085939Z
-modified_time: 2026-09-23T16:08:38.086074Z
 
 rules:
 - name: heading-too-long

@@ -34,8 +34,6 @@ pub struct Ruleset {
     pub version: Option<u64>,
     #[serde(default)]
     pub creation_time: DateTime<Utc>,
-    #[serde(default)]
-    pub modified_time: DateTime<Utc>,
     pub rules: Vec<Rule>,
 }
 
@@ -47,7 +45,6 @@ impl Default for Ruleset {
             description: None,
             version: None,
             creation_time: Utc::now(),
-            modified_time: Utc::now(),
             rules: Vec::new(),
         }
     }
@@ -67,17 +64,11 @@ impl Ruleset {
             description,
             version,
             creation_time: Utc::now(),
-            modified_time: Utc::now(),
             rules: Vec::new(),
         }
     }
 
     pub fn from_yaml(yaml_str: &str) -> yaml_serde::Result<Self> {
         yaml_serde::from_str(yaml_str)
-    }
-
-    /// Updates the modified time of the ruleset to the current time.
-    pub fn modified(&mut self) {
-        self.modified_time = Utc::now();
     }
 }
