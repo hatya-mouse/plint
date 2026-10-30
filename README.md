@@ -13,6 +13,12 @@ If you have `cargo` installed, run the following command to install the latest v
 cargo install plint
 ```
 
+If you use Linux or macOS but don't have `cargo` installed, run the install script using the following command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/hatya-mouse/plint/main/install.sh | sh
+```
+
 # Features
 
 - Find errors & warnings in your text files

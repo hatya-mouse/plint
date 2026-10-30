@@ -30,12 +30,12 @@ fn main() {
     let cli = cmd::Cli::parse();
 
     match cli.command {
-        Some(Commands::Lint {
+        Commands::Lint {
             files,
             rulesets,
             verbose,
-        }) => cmd::lint::lint(&files, &rulesets, verbose),
-        Some(Commands::Ruleset { command }) => match command {
+        } => cmd::lint::lint(&files, &rulesets, verbose),
+        Commands::Ruleset { command } => match command {
             RulesetCommands::Create {
                 name,
                 authors,
@@ -45,7 +45,7 @@ fn main() {
             RulesetCommands::Edit { ruleset } => cmd::ruleset::edit(&ruleset),
             RulesetCommands::List { path, path_nolink } => cmd::ruleset::list(path, path_nolink),
         },
-        Some(Commands::Group { command }) => match command {
+        Commands::Group { command } => match command {
             GroupCommands::Create { name } => cmd::group::create(name),
             GroupCommands::Edit { group } => cmd::group::edit(&group),
             GroupCommands::AddSet { group, rulesets } => cmd::group::add_set(&group, rulesets),
@@ -58,7 +58,6 @@ fn main() {
                 path_nolink,
             } => cmd::group::list(rulesets, path, path_nolink),
         },
-        Some(Commands::Remove { rulesets, force }) => cmd::remove::remove(&rulesets, force),
-        None => (),
+        Commands::Remove { rulesets, force } => cmd::remove::remove(&rulesets, force),
     };
 }

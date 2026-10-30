@@ -30,7 +30,7 @@ pub(super) struct Cli {
     pub(super) debug: u8,
 
     #[command(subcommand)]
-    pub(super) command: Option<Commands>,
+    pub(super) command: Commands,
 }
 
 #[derive(Subcommand)]
