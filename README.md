@@ -7,19 +7,19 @@ It finds errors and warnings defined in the rulesets. Rulesets are written in a 
 
 # Quickstart
 
-**If you have `cargo` installed**, run the following command to install the latest version of `plint`:
+If you **have `cargo` installed**, run the following command to install the latest version of `plint`:
 
 ```bash
 cargo install plint
 ```
 
-**If you use Linux or macOS but don't have `cargo` installed**, run the install script using the following command:
+If you **use Linux or macOS** but **don't have `cargo` installed**, run the install script using the following command:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/hatya-mouse/plint/main/install.sh | sh
 ```
 
-**If you use neither Linux nor maxOS and don't have `cargo` installed**,
+If you **use neither Linux nor maxOS** and **don't have `cargo` installed**,
 download the compiled binary from [Releases](https://github.com/hatya-mouse/plint/releases/).
 
 # Features
