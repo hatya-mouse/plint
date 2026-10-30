@@ -1,11 +1,11 @@
 [workspace]
 resolver = "3"
 members = [
-    "crates/plint",
-    "crates/plint-linter",
     "crates/plint-lang",
+    "crates/plint-linter",
+    "crates/plint",
 ]
 
 [workspace.dependencies]
-plint-linter = { path = "crates/plint-linter" }
 plint-lang = { path = "crates/plint-lang" }
+plint-linter = { path = "crates/plint-linter" }
