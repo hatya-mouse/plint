@@ -19,6 +19,8 @@ If you use Linux or macOS but don't have `cargo` installed, run the install scri
 curl -fsSL https://raw.githubusercontent.com/hatya-mouse/plint/main/install.sh | sh
 ```
 
+If you use neither Linux nor maxOS and don't have `cargo` installed, download the compiled binary from [Releases](https://github.com/hatya-mouse/plint/releases/).
+
 # Features
 
 - Find errors & warnings in your text files
