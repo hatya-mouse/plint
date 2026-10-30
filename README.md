@@ -3,7 +3,7 @@
 `plint` is a linter for text files.
 It finds errors and warnings defined in the rulesets. Rulesets are written in a custom language designed for linting.
 
-[![asciicast](https://asciinema.org/a/y3XBjoE6GxdLROBG.svg)](https://asciinema.org/a/y3XBjoE6GxdLROBG)
+[![asciicast](https://asciinema.org/a/1270537.svg)](https://asciinema.org/a/1270537)
 
 ## Ruleset
 
