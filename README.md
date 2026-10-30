@@ -2,7 +2,7 @@
     <picture>
         <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/hatya-mouse/plint/main/assets/plint_logo_white.png">
         <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/hatya-mouse/plint/main/assets/plint_logo_black.png">
-        <img src="https://raw.githubusercontent.com/hatya-mouse/plint/main/assets/plint_logo_black.png" width="320px" alt="Description">
+        <img src="https://raw.githubusercontent.com/hatya-mouse/plint/main/assets/plint_logo_black.png" width="240px" alt="Description">
     </picture>
 </div>
 
