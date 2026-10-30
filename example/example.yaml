@@ -42,11 +42,9 @@ rules:
         heading_level = len(regex(doc, heading, "#"))
         heading_diff = sub(heading_level, last_heading_level)
 
-        return = if gt(heading_diff, 1) (
-            heading
-        )
-
         last_heading_level = heading_level
 
-        return
+        if gt(heading_diff, 1) (
+            heading
+        )
     )
