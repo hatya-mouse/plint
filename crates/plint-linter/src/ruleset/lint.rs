@@ -1,10 +1,26 @@
+//
+//  Copyright 2026 Shuntaro Kasatani
+//
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+//
+
 use crate::{
     Document, LinterError,
     ext_funcs::add_ext_funcs,
     ruleset::{Rule, Ruleset, Severity},
 };
 use plint_lang::{Interpreter, Value};
-use std::range::Range;
+use std::ops::Range;
 
 impl Ruleset {
     pub fn lint(&self, doc: &Document) -> Vec<LintEntry> {
@@ -48,17 +64,15 @@ fn process_code_result(rule: &Rule, value: Value) -> Vec<LintEntry> {
     let mut results = Vec::new();
 
     match value {
-        Value::Bool(boolean) => {
-            if boolean {
-                results.push(LintEntry {
-                    rule_name: rule.name.clone(),
-                    result: LintResult::Diagnostic {
-                        message: rule.message.clone(),
-                        severity: rule.severity.clone(),
-                        match_data: None,
-                    },
-                });
-            }
+        Value::Bool(true) => {
+            results.push(LintEntry {
+                rule_name: rule.name.clone(),
+                result: LintResult::Diagnostic {
+                    message: rule.message.clone(),
+                    severity: rule.severity,
+                    match_data: None,
+                },
+            });
         }
         Value::List(matches) => {
             for item in matches {
@@ -67,7 +81,7 @@ fn process_code_result(rule: &Rule, value: Value) -> Vec<LintEntry> {
                         rule_name: rule.name.clone(),
                         result: LintResult::Diagnostic {
                             message: rule.message.clone(),
-                            severity: rule.severity.clone(),
+                            severity: rule.severity,
                             match_data: Some(m),
                         },
                     });
@@ -79,7 +93,7 @@ fn process_code_result(rule: &Rule, value: Value) -> Vec<LintEntry> {
                 rule_name: rule.name.clone(),
                 result: LintResult::Diagnostic {
                     message: rule.message.clone(),
-                    severity: rule.severity.clone(),
+                    severity: rule.severity,
                     match_data: Some(m),
                 },
             });

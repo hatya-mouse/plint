@@ -22,4 +22,3 @@ fi
 curl -L "https://github.com/Hatya-mouse/plint/releases/download/${VERSION}/plint-${TARGET}.tar.gz" | tar -xz
 sudo mv plint /usr/local/bin/
 echo "✓ Installed plint ${VERSION}"
-

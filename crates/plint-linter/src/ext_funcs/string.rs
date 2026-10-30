@@ -1,3 +1,19 @@
+//
+//  Copyright 2026 Shuntaro Kasatani
+//
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+//
+
 use plint_lang::{Interpreter, Value};
 use unicode_segmentation::UnicodeSegmentation;
 
@@ -15,7 +31,8 @@ pub(super) fn add_funcs(interpreter: &mut Interpreter) {
 fn contains(args: &[Value]) -> Result<Value, String> {
     let (string, pattern): (&str, &str) = match args {
         [Value::String(text), Value::String(pattern)] => (text, pattern),
-        [Value::String(text), Value::Match(m), Value::String(pattern)] => match text.get(*m) {
+        [Value::String(text), Value::Match(m), Value::String(pattern)] => match text.get(m.clone())
+        {
             Some(substring) => (substring, pattern),
             None => return Ok(Value::Null),
         },
@@ -28,7 +45,8 @@ fn contains(args: &[Value]) -> Result<Value, String> {
 fn starts_with(args: &[Value]) -> Result<Value, String> {
     let (string, pattern): (&str, &str) = match args {
         [Value::String(text), Value::String(pattern)] => (text, pattern),
-        [Value::String(text), Value::Match(m), Value::String(pattern)] => match text.get(*m) {
+        [Value::String(text), Value::Match(m), Value::String(pattern)] => match text.get(m.clone())
+        {
             Some(substring) => (substring, pattern),
             None => return Ok(Value::Null),
         },
@@ -41,7 +59,8 @@ fn starts_with(args: &[Value]) -> Result<Value, String> {
 fn ends_with(args: &[Value]) -> Result<Value, String> {
     let (string, pattern): (&str, &str) = match args {
         [Value::String(text), Value::String(pattern)] => (text, pattern),
-        [Value::String(text), Value::Match(m), Value::String(pattern)] => match text.get(*m) {
+        [Value::String(text), Value::Match(m), Value::String(pattern)] => match text.get(m.clone())
+        {
             Some(substring) => (substring, pattern),
             None => return Ok(Value::Null),
         },
@@ -54,7 +73,8 @@ fn ends_with(args: &[Value]) -> Result<Value, String> {
 fn regex(args: &[Value]) -> Result<Value, String> {
     let (string, pattern): (&str, &str) = match args {
         [Value::String(text), Value::String(pattern)] => (text, pattern),
-        [Value::String(text), Value::Match(m), Value::String(pattern)] => match text.get(*m) {
+        [Value::String(text), Value::Match(m), Value::String(pattern)] => match text.get(m.clone())
+        {
             Some(substring) => (substring, pattern),
             None => return Ok(Value::Null),
         },
@@ -66,7 +86,7 @@ fn regex(args: &[Value]) -> Result<Value, String> {
     Ok(Value::List(
         regex
             .find_iter(string)
-            .map(|m| Value::Match(m.range().into()))
+            .map(|m| Value::Match(m.range()))
             .collect(),
     ))
 }
@@ -77,7 +97,7 @@ fn text(args: &[Value]) -> Result<Value, String> {
         [Value::Integer(integer)] => Ok(Value::String(integer.to_string())),
         [Value::Bool(boolean)] => Ok(Value::String(boolean.to_string())),
         [Value::String(doc), Value::Match(m)] => Ok(doc
-            .get(*m)
+            .get(m.clone())
             .map(|str| Value::String(str.to_string()))
             .unwrap_or(Value::Null)),
         _ => Err("Invalid arguments for text function".to_string()),
@@ -87,7 +107,7 @@ fn text(args: &[Value]) -> Result<Value, String> {
 fn chars(args: &[Value]) -> Result<Value, String> {
     let string: &str = match args {
         [Value::String(text)] => text,
-        [Value::String(text), Value::Match(m)] => match text.get(*m) {
+        [Value::String(text), Value::Match(m)] => match text.get(m.clone()) {
             Some(substring) => substring,
             None => return Ok(Value::Null),
         },
@@ -98,7 +118,7 @@ fn chars(args: &[Value]) -> Result<Value, String> {
     Ok(Value::List(
         string
             .grapheme_indices(true)
-            .map(|(start, str)| Value::Match((start..start + str.len()).into()))
+            .map(|(start, str)| Value::Match(start..start + str.len()))
             .collect(),
     ))
 }
@@ -106,7 +126,7 @@ fn chars(args: &[Value]) -> Result<Value, String> {
 fn words(args: &[Value]) -> Result<Value, String> {
     let string: &str = match args {
         [Value::String(text)] => text,
-        [Value::String(text), Value::Match(m)] => match text.get(*m) {
+        [Value::String(text), Value::Match(m)] => match text.get(m.clone()) {
             Some(substring) => substring,
             None => return Ok(Value::Null),
         },
@@ -117,7 +137,7 @@ fn words(args: &[Value]) -> Result<Value, String> {
     Ok(Value::List(
         string
             .split_word_bound_indices()
-            .map(|(start, str)| Value::Match((start..start + str.len()).into()))
+            .map(|(start, str)| Value::Match(start..start + str.len()))
             .collect(),
     ))
 }
@@ -125,7 +145,7 @@ fn words(args: &[Value]) -> Result<Value, String> {
 fn sentences(args: &[Value]) -> Result<Value, String> {
     let string: &str = match args {
         [Value::String(text)] => text,
-        [Value::String(text), Value::Match(m)] => match text.get(*m) {
+        [Value::String(text), Value::Match(m)] => match text.get(m.clone()) {
             Some(substring) => substring,
             None => return Ok(Value::Null),
         },
@@ -136,7 +156,7 @@ fn sentences(args: &[Value]) -> Result<Value, String> {
     Ok(Value::List(
         string
             .split_sentence_bound_indices()
-            .map(|(start, str)| Value::Match((start..start + str.len()).into()))
+            .map(|(start, str)| Value::Match(start..start + str.len()))
             .collect(),
     ))
 }

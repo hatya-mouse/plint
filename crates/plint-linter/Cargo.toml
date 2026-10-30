@@ -1,5 +1,8 @@
 [package]
 name = "plint-linter"
+description = "The core feature of the linter for plint"
+repository = "https://github.com/hatya-mouse/plint"
+license = "Apache-2.0"
 version = "0.1.0"
 edition = "2024"
 
@@ -10,5 +13,5 @@ regex = "1.13.1"
 serde = { version = "1.0.229", features = ["derive"] }
 unicode-segmentation = "1.13.3"
 yaml_serde = "0.10.7"
-plint-lang = { workspace = true }
+plint-lang = "0.1.0"
 pulldown-cmark = "0.13.4"
