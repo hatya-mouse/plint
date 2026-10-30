@@ -1,9 +1,16 @@
-# plint
+<div align="center">
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/hatya-mouse/plint/main/assets/plint_logo_white.png">
+        <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/hatya-mouse/plint/main/assets/plint_logo_black.png">
+        <img src="https://raw.githubusercontent.com/hatya-mouse/plint/main/assets/plint_logo_black.png" width="320px" alt="Description">
+    </picture>
+</div>
 
 `plint` is a linter for text files.
 It finds errors and warnings defined in the rulesets. Rulesets are written in a custom language designed for linting.
 
-[![asciicast](https://asciinema.org/a/1270537.svg)](https://asciinema.org/a/1270537)
+[![asciicast](./assets/plint.gif)](https://asciinema.org/a/1270537)
+[Watch on asciinema](https://asciinema.org/a/1270537)
 
 ## Ruleset
 
