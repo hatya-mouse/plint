@@ -11,14 +11,14 @@ This is possible because they return `null` by default.
 This mean that these two programs are the same:
 
 *Program 1*
-```
+```rust
 if gt(value, 5) (
     "Greater than 5"
 )
 ```
 
 *Program 2*
-```
+```rust
 if gt(value, 5) (
     "Greater than 5"
 ) else (
@@ -31,7 +31,7 @@ if gt(value, 5) (
 Unlike `if` that returns `null` if a return value is not specified, `for` statement collects non-`null` values and return them as an array.
 If the statement inside `for` only returns `null`, outer `for` returns an empty array.
 
-```
+```rust
 for heading in md.headings(doc) (
     if gt(word_count(doc, heading), 15) (
         heading
@@ -47,7 +47,7 @@ A program used for linting is supposed to return an array of `Match`es.
 
 Note that `doc` variable contains a string of the entire file to be linted.
 
-```
+```rust
 for sentence in sentences(doc) (
     if gt(word_count(doc, sentence), 40) (
         sentence
@@ -59,7 +59,7 @@ You may need to pass the `doc` variable to some functions, as `Match` does not c
 
 ## Sample Programs
 
-```
+```rust
 for word in words(doc) (
     if contains(doc, word, "TODO") (
         word
@@ -71,7 +71,7 @@ This program loops over all words in the document, checks if the word contains "
 
 You can also write complex rules using variables:
 
-```
+```rust
 last_heading_level = 0
 for heading in md.headings(doc) (
     heading_level = len(regex(doc, heading, "#"))
